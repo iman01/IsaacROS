@@ -81,7 +81,7 @@ from isaaclab.terrains.config.rough import ROUGH_TERRAINS_CFG  # isort:skip
 
 def design_scene() -> tuple[dict, torch.Tensor]:
     """Designs the scene."""
-    # Lights
+
     cfg = sim_utils.DomeLightCfg(intensity=2000.0, color=(0.75, 0.75, 0.75))
     cfg.func("/World/Light", cfg)
 
@@ -100,7 +100,7 @@ def design_scene() -> tuple[dict, torch.Tensor]:
 
     # Handler for terrains importing
     terrain_importer_cfg = TerrainImporterCfg(
-        num_envs=2048,
+        num_envs=1,
         env_spacing=3.0,
         prim_path="/World/ground",
         max_init_terrain_level=None,
@@ -139,31 +139,29 @@ def design_scene() -> tuple[dict, torch.Tensor]:
 
     # return the scene information
     scene_entities = {"terrain": terrain_importer}
+
+
+
+
     return scene_entities, terrain_importer.env_origins
 
 
 def run_simulator(sim: sim_utils.SimulationContext, entities: dict[str, AssetBase], origins: torch.Tensor):
-    """Runs the simulation loop."""
-    # Simulate physics
     while simulation_app.is_running():
-        # perform step
+
+        # odbiera dane z symulacji
+        
+
         sim.step()
 
 
 def main():
-    """Main function."""
-    # Initialize the simulation context
     sim_cfg = sim_utils.SimulationCfg(dt=0.01, device=args_cli.device)
     sim = sim_utils.SimulationContext(sim_cfg)
-    # Set main camera
     sim.set_camera_view(eye=[5.0, 5.0, 5.0], target=[0.0, 0.0, 0.0])
-    # design scene
     scene_entities, scene_origins = design_scene()
-    # Play the simulator
     sim.reset()
-    # Now we are ready!
     print("[INFO]: Setup complete...")
-    # Run the simulator
     run_simulator(sim, scene_entities, scene_origins)
 
 
