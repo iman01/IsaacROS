@@ -5,6 +5,9 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 import threading
+from sensor_msgs.msg import Image
+import numpy as np
+
 
 
 def ros_spin(node):
@@ -18,12 +21,49 @@ class URDFLoaderApp:
     def setup_scene(self):
         import isaacsim.core.utils.stage as stage_utils
         import isaacsim.core.utils.prims as prim_utils
+        import isaacsim.core.utils.extensions as extensions
+        import isaacsim.core.utils.numpy.rotations as rot_utils
         from isaacsim.core.api import World
         from isaacsim.core.api.objects import GroundPlane
         from isaacsim.asset.importer.urdf import _urdf
+
         import omni.kit.commands
         import omni.usd
         from pxr import UsdPhysics, Gf, UsdGeom
+        from isaacsim.sensors.camera import Camera
+        import omni.syntheticdata._syntheticdata as sd        
+        import omni.replicator.core as rep
+        import omni.graph.core as og
+
+        extensions.enable_extension("isaacsim.ros2.bridge")
+
+        self.cameras = {}
+
+        def publish_rgb(camera: Camera, cam_name, freq):
+            render_product = camera._render_product_path
+            step_size = int(60/freq)
+            topic_name = cam_name+"_rgb"
+            queue_size = 1
+            node_namespace = ""
+            frame_id = camera.prim_path.split("/")[-1]
+
+            rv = omni.syntheticdata.SyntheticData.convert_sensor_type_to_rendervar(sd.SensorType.Rgb.name)
+
+            writer = rep.writers.get(rv + "ROS2PublishImage")
+            writer.initialize(
+                frameId=frame_id,
+                nodeNamespace=node_namespace,
+                queueSize=queue_size,
+                topicName=topic_name
+            )
+            writer.attach([render_product])
+
+            gate_path = omni.syntheticdata.SyntheticData._get_node_path(
+                rv + "IsaacSimulationGate", render_product
+            )
+            og.Controller.attribute(gate_path + ".inputs:step").set(step_size)
+
+            return
 
         # Create world and ground plane
         self.world = World(stage_units_in_meters=1.0)
@@ -44,7 +84,7 @@ class URDFLoaderApp:
         import_config.distance_scale = 1
         import_config.density = 0.0
 
-        urdf_path = "/home/jaszczur/agrorob_ws/src/agrorob_visualization/urdf/agrorob_visualization.urdf"
+        urdf_path = "/home/bobo/agrorob_ws/src/agrorob_visualization/urdf/agrorob_visualization.urdf"
 
 
         result, robot_model = omni.kit.commands.execute(
@@ -68,6 +108,39 @@ class URDFLoaderApp:
             else:
                 xform_api.Set((0, 0, 2.2))
 
+        camera_configs = [
+            {
+                "name": "camera_front",
+                "prim_path": "/agrorob_visualization/base_link/camera_front",
+                "position": np.array([1.45, 0, 2]),
+                "orientation": rot_utils.euler_angles_to_quats(np.array([0, 15, 0]), degrees=True),
+            },
+            {
+                "name": "camera_left",
+                "prim_path": "/agrorob_visualization/base_link/camera_left",
+                "position": np.array([1.58, 0.5, 1.95]),
+                "orientation": rot_utils.euler_angles_to_quats(np.array([0, 90, 0]), degrees=True),
+            },
+            {
+                "name": "camera_right",
+                "prim_path": "/agrorob_visualization/base_link/camera_right",
+                "position": np.array([1.58, -0.52, 1.95]),
+                "orientation": rot_utils.euler_angles_to_quats(np.array([0, 90, 0]), degrees=True),
+            },
+        ]
+
+        for cam in camera_configs:
+            camera = Camera(
+                prim_path=cam["prim_path"],
+                position=cam["position"],
+                frequency=20,
+                resolution=(256, 256),
+                orientation=cam["orientation"],
+            )
+            camera.initialize()
+            publish_rgb(camera, cam["name"], freq=20)
+            self.cameras[cam["name"]] = camera
+
         self.world.reset()
 
     def run(self):
@@ -80,6 +153,10 @@ class URDFLoaderApp:
         self.setup_scene()
         import omni.usd
         from pxr import UsdPhysics
+        import isaacsim.core.utils.prims as prim_utils
+        from isaacsim.sensors.camera import Camera
+
+
 
         #WHEELS
         wheel_joints = {
@@ -136,6 +213,7 @@ class URDFLoaderApp:
 
             self.world.step(render=True)
             self.simulation_app.update()
+
         
         
         
