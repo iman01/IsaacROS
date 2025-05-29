@@ -34,8 +34,7 @@ class URDFLoaderApp:
         import_config.distance_scale = 1
         import_config.density = 0.0
 
-        urdf_path = "/home/bobo/agrorob_ws/src/agrorob_visualization/urdf/agrorob_visualization.urdf"
-        joint_prim_path = "/agrororob_visualization/joints/shin_wheel_FL"
+        urdf_path = "/home/jaszczur/agrorob_ws/src/agrorob_visualization/urdf/agrorob_visualization.urdf"
 
 
         result, robot_model = omni.kit.commands.execute(
@@ -82,27 +81,18 @@ class URDFLoaderApp:
             if joint_prim:
                 drive_apis[key] = UsdPhysics.DriveAPI.Get(joint_prim, "angular")
 
-        # Set velocities: right wheels positive, left wheels negative
-        right_velocity = 50.0
-        left_velocity = -right_velocity
+        velocity = 50.0
+
+        for key in ["FR", "RR", "FL", "RL"]:
+            if key not in drive_apis:
+                print(f"Warning: Drive API for {key} not found.")
+                continue
+            drive_apis[key].GetDampingAttr().Set(6000.0)
+            drive_apis[key].GetStiffnessAttr().Set(0.0)
 
         while self.simulation_app.is_running():
-            if drive_apis.get("FR"):
-                drive_apis["FR"].GetDampingAttr().Set(6000.0)
-                drive_apis["FR"].GetStiffnessAttr().Set(0.0)
-                drive_apis["FR"].GetTargetVelocityAttr().Set(right_velocity)
-            if drive_apis.get("RR"):
-                drive_apis["RR"].GetDampingAttr().Set(6000.0)
-                drive_apis["RR"].GetStiffnessAttr().Set(0.0)
-                drive_apis["RR"].GetTargetVelocityAttr().Set(right_velocity)
-            if drive_apis.get("FL"):
-                drive_apis["FL"].GetDampingAttr().Set(6000.0)
-                drive_apis["FL"].GetStiffnessAttr().Set(0.0)
-                drive_apis["FL"].GetTargetVelocityAttr().Set(left_velocity)
-            if drive_apis.get("RL"):
-                drive_apis["RL"].GetDampingAttr().Set(6000.0)
-                drive_apis["RL"].GetStiffnessAttr().Set(0.0)
-                drive_apis["RL"].GetTargetVelocityAttr().Set(left_velocity)
+            for key in ["FR", "RR", "FL", "RL"]:
+                drive_apis[key].GetTargetVelocityAttr().Set(velocity if key in ["FR", "RR"] else -velocity)
 
             self.world.step(render=True)
             self.simulation_app.update()
