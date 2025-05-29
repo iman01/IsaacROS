@@ -1,0 +1,22 @@
+GITHUB cleanup i wyslac
+
+kola speed, reszta konty 
+
+
+
+(base) jaszczur@jaszczur:~/agrorob_ws$ source install/setup.sh
+(base) jaszczur@jaszczur:~/agrorob_ws$ ros2 launch agrorob_visualization agrorob_rviz.launch.py
+
+
+
+blue robot
+camera -> img as ros topic 
+
+cmdvel interface for a robot -> crab and mirror inverse, toggelable in ros topic 
+
+
+
+
+3 rough terrains and add soil texture to them 
+
+Pretty readme (install, and how to run)
