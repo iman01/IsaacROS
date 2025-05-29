@@ -1,5 +1,15 @@
 from isaacsim import SimulationApp
 
+
+import rclpy
+from rclpy.node import Node
+from sensor_msgs.msg import JointState
+import threading
+
+
+def ros_spin(node):
+    rclpy.spin(node)
+
 class URDFLoaderApp:
     def __init__(self):
         self.simulation_app = SimulationApp({"headless": False})
@@ -61,27 +71,29 @@ class URDFLoaderApp:
         self.world.reset()
 
     def run(self):
+        rclpy.init()
+        node = JointStateListener()
+        ros_thread = threading.Thread(target=ros_spin, args=(node,), daemon=True)
+        ros_thread.start()
+
+
         self.setup_scene()
         import omni.usd
         from pxr import UsdPhysics
 
-        # Define joint paths for all four wheels
+        #WHEELS
         wheel_joints = {
             "FL": "/agrorob_visualization/joints/shin_wheel_FL",
             "FR": "/agrorob_visualization/joints/shin_wheel_FR",
             "RL": "/agrorob_visualization/joints/shin_wheel_RL",
             "RR": "/agrorob_visualization/joints/shin_wheel_RR",
         }
-
-        # Get drive APIs for all wheels
         stage = omni.usd.get_context().get_stage()
         drive_apis = {}
         for key, path in wheel_joints.items():
             joint_prim = stage.GetPrimAtPath(path)
             if joint_prim:
                 drive_apis[key] = UsdPhysics.DriveAPI.Get(joint_prim, "angular")
-
-        velocity = 50.0
 
         for key in ["FR", "RR", "FL", "RL"]:
             if key not in drive_apis:
@@ -90,13 +102,76 @@ class URDFLoaderApp:
             drive_apis[key].GetDampingAttr().Set(6000.0)
             drive_apis[key].GetStiffnessAttr().Set(0.0)
 
+
+        #ROTATION JOINTS
+        body_shin_joints = {
+            "FL": "/agrorob_visualization/joints/body_shin_FL",
+            "FR": "/agrorob_visualization/joints/body_shin_FR",
+            "RL": "/agrorob_visualization/joints/body_shin_RL",
+            "RR": "/agrorob_visualization/joints/body_shin_RR",
+        }
+        body_shin_drive_apis = {}
+        for key, path in body_shin_joints.items():
+            joint_prim = stage.GetPrimAtPath(path)
+            if joint_prim:
+                body_shin_drive_apis[key] = UsdPhysics.DriveAPI.Get(joint_prim, "angular")
+        for key in ["FR", "RR", "FL", "RL"]:
+            if key not in body_shin_drive_apis:
+                print(f"Warning: Body_shin Drive API for {key} not found.")
+                continue
+            body_shin_drive_apis[key].GetDampingAttr().Set(100.0)
+            body_shin_drive_apis[key].GetStiffnessAttr().Set(200.0)
+
+
+
         while self.simulation_app.is_running():
+
+            velocity = node.speed * 200
+
             for key in ["FR", "RR", "FL", "RL"]:
                 drive_apis[key].GetTargetVelocityAttr().Set(velocity if key in ["FR", "RR"] else -velocity)
+                body_shin_drive_apis[key].GetTargetPositionAttr().Set(-node.front * 180 / 3.14 if key in ["FR", "FL"] else -node.back* 180 / 3.14)
+
+
 
             self.world.step(render=True)
             self.simulation_app.update()
+        
+        
+        
         self.simulation_app.close()
+        node.destroy_node()
+        rclpy.shutdown()
+
+
+
+
+
+class JointStateListener(Node):
+    def __init__(self):
+        super().__init__('joint_state_listener')
+        self.subscription = self.create_subscription(
+            JointState,
+            '/joint_states',
+            self.listener_callback,
+            10
+        )
+        self.subscription  # prevent unused variable warning
+
+        self.speed = 0
+        self.front = 0
+        self.back = 0
+
+    def listener_callback(self, msg):
+        joint_positions = dict(zip(msg.name, msg.position))
+        self.front = joint_positions.get('front', 0)
+        self.back = joint_positions.get('back', 0)
+        self.speed = joint_positions.get('speed', 0)
+
+
+
+
+
 
 if __name__ == "__main__":
     URDFLoaderApp().run()
