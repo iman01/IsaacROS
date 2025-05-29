@@ -46,13 +46,21 @@ class Game:
                 if event.type == pygame.JOYBUTTONDOWN:
                     if event.button == 0:  # Replace 0 with your button index
                         self.crab = not self.crab
+                    if event.button == 1:  # Replace 0 with your button index
+                        pygame.quit()
+                        sys.exit()
 
 
             if self.joystick:
                 self.handle_gamepad_input()
 
             self.draw()
-            self.node.send(self.crab)
+            if not self.node.send(self.front_rot, self.back_rot, self.speed):
+                print("Node is not running, exiting...")
+                pygame.quit()
+                sys.exit()
+                break
+
             self.clock.tick(60)
 
     def draw(self):
@@ -78,10 +86,10 @@ class Game:
         else:  pygame.draw.rect(self.screen, (200, 5, 5), pygame.Rect(150 + 130 * self.speed, bar_y, -130 * self.speed, bar_height), 0)
 
         def draw_arrow(center, angle):
-            angle = angle - pi/2  # Convert angle to radians
-            tail_length = 30  # length of the arrow tail
-            head_length = 15  # length of the arrowhead
-            head_width = 30   # width of the arrowhead
+            angle = angle - pi/2  
+            tail_length = 30
+            head_length = 15
+            head_width = 30
 
             x_tail, y_tail = center
 
@@ -96,11 +104,9 @@ class Game:
             right_x = x_base + head_width * sin(angle) / 2
             right_y = y_base  - head_width * cos(angle) / 2
 
-            color = (200, 50, 50) if self.crab else (10, 50, 10)
+            color = (80, 20, 20) if self.crab else (20, 80, 20)
             pygame.draw.line(self.screen, color, (x_tail, y_tail), (x_base, y_base), 3)
             pygame.draw.polygon(self.screen, color, [(x_head, y_head), (left_x, left_y), (right_x, right_y)])
-            # pygame.draw.line(self.screen, (0, 0, 0), (x_tail, y_tail), (x_base, y_base), 3)
-            # pygame.draw.polygon(self.screen, (0, 0, 0), [(x_head, y_head), (left_x, left_y), (right_x, right_y)])
 
 
         arrow_spacing_x, arrow_spacing_y = 30, 50
@@ -147,7 +153,7 @@ class StatePublisher(Node):
         rclpy.init()
         super().__init__('state_publisher')
 
-        qos_profile = QoSProfile(depth=10)
+        qos_profile = QoSProfile(depth=5)
         self.joint_pub = self.create_publisher(JointState, 'joint_states', qos_profile)
         self.broadcaster = TransformBroadcaster(self, qos=qos_profile)
         self.nodeName = self.get_name()
@@ -156,35 +162,14 @@ class StatePublisher(Node):
         self.degree = pi / 180.0
         self.loop_rate = self.create_rate(60)
 
-        # robot state
-        tilt = 0.
-        tinc = self.degree
-        swivel = 0.
-        self.angle = 0.
-        height = 0.
-        hinc = 0.005
-
-
-        []
-
-        body_shin_FR = 0.
-        shin_wheel_FR = 0.
-        body_shin_FL = 0.
-        shin_wheel_FL = 0.
-        body_shin_RR = 0.
-        shin_wheel_RR = 0.
-        body_shin_RL = 0.
-        shin_wheel_RL = 0.
-
-
-
+      
 
         # message declarations
         self.odom_trans = TransformStamped()
         self.odom_trans.header.frame_id = 'odom'
         self.odom_trans.child_frame_id = 'base_link'
         self.joint_state = JointState()
-    def send(self, positions): 
+    def send(self, front, back, speed): 
         def euler_to_quaternion(roll, pitch, yaw):
             qx = sin(roll/2) * cos(pitch/2) * cos(yaw/2) - cos(roll/2) * sin(pitch/2) * sin(yaw/2)
             qy = cos(roll/2) * sin(pitch/2) * cos(yaw/2) + sin(roll/2) * cos(pitch/2) * sin(yaw/2)
@@ -196,21 +181,10 @@ class StatePublisher(Node):
             if rclpy.ok():
                 rclpy.spin_once(self)
 
-                body_shin_FR = random.uniform(-0.5, 0.5)
-                shin_wheel_FR = random.uniform(-0.5, 0.5)
-                body_shin_FL = random.uniform(-0.5, 0.5)
-                shin_wheel_FL = random.uniform(-0.5, 0.5)
-                body_shin_RR = random.uniform(-0.5, 0.5)
-                shin_wheel_RR = random.uniform(-0.5, 0.5)
-                body_shin_RL = random.uniform(-0.5, 0.5)
-                shin_wheel_RL = random.uniform(-0.5, 0.5)
-
                 now = self.get_clock().now()
                 self.joint_state.header.stamp = now.to_msg()
-                self.joint_state.name = ['body_shin_FR', 'shin_wheel_FR', 'body_shin_FL', 'shin_wheel_FL',
-                    'body_shin_RR', 'shin_wheel_RR', 'body_shin_RL', 'shin_wheel_RL']
-                self.joint_state.position = [body_shin_FR, shin_wheel_FR, body_shin_FL, shin_wheel_FL,
-                    body_shin_RR, shin_wheel_RR, body_shin_RL, shin_wheel_RL]
+                self.joint_state.name = ['front','back','speed']
+                self.joint_state.position = [front,back,speed]
 
 
 
@@ -218,15 +192,14 @@ class StatePublisher(Node):
                 # update transform
                 # (moving in a circle with radius=2)
                 self.odom_trans.header.stamp = now.to_msg()
-                self.odom_trans.transform.translation.x = cos(self.angle)*2
-                # self.odom_trans.transform.translation.y = sin(angle)*2
+                self.odom_trans.transform.translation.x = cos(1)*2
+                self.odom_trans.transform.translation.y = sin(1)*2
                 self.odom_trans.transform.translation.z = 1.6
                 self.odom_trans.transform.rotation = \
-                    euler_to_quaternion(0, 0, self.angle + pi/2) # roll,pitch,yaw
-
-                # print(self.odom_trans)
+                    euler_to_quaternion(0, 0, 1 + pi/2) # roll,pitch,yaw
+# 
                 self.joint_pub.publish(self.joint_state)
-                self.broadcaster.sendTransform(self.odom_trans)
+                # self.broadcaster.sendTransform(self.odom_trans)
 
                 # Create new robot state
                 # tilt += tinc
@@ -238,7 +211,7 @@ class StatePublisher(Node):
                 # swivel += self.degree
                 # angle += self.degree/4
 
-
+                print(f"Front: {front}, Back: {back}, Speed: {speed}")
                 self.loop_rate.sleep()
             else:
                 return False
