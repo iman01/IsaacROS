@@ -5,6 +5,8 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 import threading
+import numpy as np
+
 
 
 def ros_spin(node):
@@ -23,7 +25,7 @@ class URDFLoaderApp:
         from isaacsim.asset.importer.urdf import _urdf
         import omni.kit.commands
         import omni.usd
-        from pxr import UsdPhysics, Gf, UsdGeom
+        from pxr import UsdPhysics, Gf, UsdGeom,UsdShade, Sdf, UsdGeom
 
         # Create world and ground plane
         self.world = World(stage_units_in_meters=1.0)
@@ -44,8 +46,7 @@ class URDFLoaderApp:
         import_config.distance_scale = 1
         import_config.density = 0.0
 
-        urdf_path = "/home/jaszczur/agrorob_ws/src/agrorob_visualization/urdf/agrorob_visualization.urdf"
-
+        urdf_path = "agrorob/agrorob_visualization.urdf"
 
         result, robot_model = omni.kit.commands.execute(
             "URDFParseFile",
@@ -67,6 +68,29 @@ class URDFLoaderApp:
                 xform.AddTranslateOp().Set((0, 0, 2.2))
             else:
                 xform_api.Set((0, 0, 2.2))
+
+        # material_path = "/World/Looks/BlueMaterial"
+        # material_body = UsdShade.Material.Define(stage, material_path)
+        # shader = UsdShade.Shader.Define(stage, material_path + "/Shader")
+        # shader.CreateIdAttr("UsdPreviewSurface")
+        # shader.CreateInput("diffuseColor", Sdf.ValueTypeNames.Color3f).Set(Gf.Vec3f(0.0, 0.2, 1.0))  # Blue
+        # shader.CreateInput("roughness", Sdf.ValueTypeNames.Float).Set(0.4)
+        # material_body.CreateSurfaceOutput().ConnectToSource(shader, "surface")
+        # material_path = "/World/Looks/GreyMaterial"
+        # material_wheels = UsdShade.Material.Define(stage, material_path)
+        # shader = UsdShade.Shader.Define(stage, material_path + "/Shader")
+        # shader.CreateIdAttr("UsdPreviewSurface")
+        # shader.CreateInput("diffuseColor", Sdf.ValueTypeNames.Color3f).Set(Gf.Vec3f(0.0, 0.2, 1.0))  # Blue
+        # shader.CreateInput("roughness", Sdf.ValueTypeNames.Float).Set(0.4)
+        # material_wheels.CreateSurfaceOutput().ConnectToSource(shader, "surface")
+
+        # def bind_material_recursive(prim):
+        #     if prim.IsA(UsdGeom.Gprim):
+        #         UsdShade.MaterialBindingAPI(prim).Bind(material_body)
+        #     for child in prim.GetChildren():
+        #         bind_material_recursive(child)
+
+        # bind_material_recursive(robot_prim)
 
         self.world.reset()
 
@@ -126,7 +150,7 @@ class URDFLoaderApp:
 
         while self.simulation_app.is_running():
 
-            velocity = node.speed * 200
+            velocity = node.speed * 250
 
             for key in ["FR", "RR", "FL", "RL"]:
                 drive_apis[key].GetTargetVelocityAttr().Set(velocity if key in ["FR", "RR"] else -velocity)
@@ -164,9 +188,15 @@ class JointStateListener(Node):
 
     def listener_callback(self, msg):
         joint_positions = dict(zip(msg.name, msg.position))
-        self.front = joint_positions.get('front', 0)
+        self.front  = joint_positions.get('front', 0)
         self.back = joint_positions.get('back', 0)
+
+        #TODO make smooth movment 
+        # self.front = float(np.unwrap([self.front, joint_positions.get('front', 0)])[-1])
+        # self.back = float(np.unwrap([self.back, joint_positions.get('back', 0)])[-1])
         self.speed = joint_positions.get('speed', 0)
+
+
 
 
 
