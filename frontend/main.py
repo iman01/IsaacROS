@@ -9,14 +9,22 @@ from sensor_msgs.msg import JointState
 from tf2_ros import TransformBroadcaster, TransformStamped
 import random
 
+import threading
+from sensor_msgs.msg import Image
+import cv2
+import numpy as np
+from rclpy.executors import MultiThreadedExecutor
 
+from cv_bridge import CvBridge
 
 class Game:
     def __init__(self):
         pygame.init()
         pygame.joystick.init()
 
-        self.WIDTH, self.HEIGHT = 300, 330
+
+        # just th
+        self.WIDTH, self.HEIGHT = 330 + 330, 330 + 330
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Agrorob Controller")
         self.font = pygame.font.SysFont(None, 36)
@@ -28,16 +36,25 @@ class Game:
             self.joystick = pygame.joystick.Joystick(0)
             self.joystick.init()
         else:
+            print("No joystick found, no alternate control available, dispalying only camera feed")
             self.joystick = None
 
         self.clock = pygame.time.Clock()
-        self.node = StatePublisher()
 
-        self.front_rot = 0
-        self.back_rot = 0 
+
+
+        self.front_rot = 0.0
+        self.back_rot = 0.0
         self.speed = 0.0
 
+
+        self.bridge = CvBridge()
+
+        self.publisher = StatePublisher()   
+        self.reciever = StateReciever(self)
+
     def run(self):
+        print('Running Agrorob Controller...')
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -55,7 +72,8 @@ class Game:
                 self.handle_gamepad_input()
 
             self.draw()
-            if not self.node.send(self.front_rot, self.back_rot, self.speed):
+
+            if not self.publisher.send(self.front_rot, self.back_rot, self.speed):
                 print("Node is not running, exiting...")
                 pygame.quit()
                 sys.exit()
@@ -64,7 +82,8 @@ class Game:
             self.clock.tick(60)
 
     def draw(self):
-        self.screen.fill((255,255,255))
+        pygame.draw.rect(self.screen, (255, 255, 255), pygame.Rect(0, 0, 330, 330))
+
 
         text = "Crab" if self.crab else "Normal"
         drive_label = self.font.render(f"Drive mode: {text}", True, (0,0,0))
@@ -119,32 +138,79 @@ class Game:
         ]
         for i in range(4):
             draw_arrow(arrow_centers[i], self.front_rot if i < 2 else self.back_rot)
+        # border
+        pygame.draw.rect(self.screen, (20, 20, 20), pygame.Rect(0, 0, 330, 330), 2)
         pygame.display.flip()
 
+
     
+    def draw_camera_left(self, msg):
+        self.draw_camera(msg,0,1)
+
+    def draw_camera_right(self, msg):
+        self.draw_camera(msg,1,1)
+
+    def draw_camera_front(self, msg):
+        self.draw_camera(msg,1,0)
+
+    def draw_camera(self, msg,x,y):
+        width, height = 330, 330
+        x = x * width
+        y = y * height
+
+        if msg is not None:
+            try:
+                img = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                img = cv2.resize(img, (width, height))
+
+                surface = pygame.surfarray.make_surface(img.swapaxes(0, 1))  # Convert to pygame surface
+                self.screen.blit(surface, (x, y))
+                # border
+                pygame.draw.rect(self.screen, (20, 20, 20), pygame.Rect(x, y, width, height), 2)
+
+
+
+            except Exception as e:
+                print(f"Image conversion error: {e}")
+            else:
+                return
+
 
     def handle_gamepad_input(self):
         dt = 0.1
-        if self.joystick:
-            # Get the axes values
-            if self.crab:
-                deadzone = 0.3
-                x = self.joystick.get_axis(0) 
-                y = -self.joystick.get_axis(1)
+        # Get the axes values
+        if self.crab:
+            deadzone = 0.3
+            x = self.joystick.get_axis(0) 
+            y = -self.joystick.get_axis(1)
 
-                if abs(x) < deadzone and abs(y) < deadzone:
-                    x, y = 0, 0
-                else:
-                    self.front_rot = -atan2(y,x) + pi/2
-                self.back_rot = self.front_rot
+            if abs(x) < deadzone and abs(y) < deadzone:
+                x, y = 0, 0
             else:
-                
-                self.front_rot += (self.joystick.get_axis(0) if abs(self.joystick.get_axis(0)) > 0.1 else 0 ) * dt
-                self.front_rot = max(-pi/2, min(self.front_rot, pi/2))
-                self.back_rot = -self.front_rot / 3
-            # axois 2 l2 axis 5 r2 
+                self.front_rot = -atan2(y,x) + pi/2
+            self.back_rot = self.front_rot
+        else:
+            
+            self.front_rot += (self.joystick.get_axis(0) if abs(self.joystick.get_axis(0)) > 0.1 else 0 ) * dt
+            self.front_rot = max(-pi/2, min(self.front_rot, pi/2))
+            self.back_rot = -self.front_rot 
+        # axois 2 l2 axis 5 r2 
 
-            self.speed = (self.joystick.get_axis(5) - self.joystick.get_axis(2))/2.0
+        self.speed = (self.joystick.get_axis(5) - self.joystick.get_axis(2))/2.0
+
+
+
+class StateReciever(Node):
+        def __init__(self, game:Game=None):  
+            super().__init__('state_reciever')
+            if game is None:
+                return 
+            
+            self.create_subscription(Image, '/camera_front_rgb', game.draw_camera_front, 10)
+            self.create_subscription(Image, '/camera_left_rgb', game.draw_camera_left, 10)
+            self.create_subscription(Image, '/camera_right_rgb', game.draw_camera_right, 10)
+            
 
 
 
@@ -169,6 +235,12 @@ class StatePublisher(Node):
         self.odom_trans.header.frame_id = 'odom'
         self.odom_trans.child_frame_id = 'base_link'
         self.joint_state = JointState()
+
+
+
+        
+
+
     def send(self, front, back, speed): 
         def euler_to_quaternion(roll, pitch, yaw):
             qx = sin(roll/2) * cos(pitch/2) * cos(yaw/2) - cos(roll/2) * sin(pitch/2) * sin(yaw/2)
@@ -211,7 +283,7 @@ class StatePublisher(Node):
                 # swivel += self.degree
                 # angle += self.degree/4
 
-                print(f"Front: {front}, Back: {back}, Speed: {speed}")
+                print(f"\rFront: {front}, Back: {back}, Speed: {speed}",end='')
                 self.loop_rate.sleep()
             else:
                 return False
@@ -221,6 +293,27 @@ class StatePublisher(Node):
         return True
 
 
+def ros_spin_thread(executor):
+    executor.spin()
+
 if __name__ == '__main__':
     game = Game()
-    game.run()
+    executor = MultiThreadedExecutor()
+    executor.add_node(game.publisher)
+    executor.add_node(game.reciever)
+
+    spin_thread = threading.Thread(target=ros_spin_thread, args=(executor,), daemon=True)
+    spin_thread.start()
+
+
+    try:
+        game.run()
+    finally:
+        executor.shutdown()
+        game.publisher.destroy_node()
+        game.reciever.destroy_node()
+        rclpy.shutdown()
+
+
+    # TODO move this to keyboard interrupt from the gaem 
+    rclpy.shutdown()

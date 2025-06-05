@@ -1,5 +1,5 @@
 from isaacsim import SimulationApp
-
+import os 
 
 import rclpy
 from rclpy.node import Node
@@ -69,12 +69,82 @@ class URDFLoaderApp:
         self.world = World(stage_units_in_meters=1.0)
         GroundPlane("/World/defaultGroundPlane", size=100.0)
 
+
+        def create_ground_material():
+            from pxr import UsdShade, Sdf,UsdGeom, Gf, Vt
+
+            plane_path = "/World/TexturedPlane"
+            material_path = "/World/Materials/TiledMaterial"
+            texture_file_path =  os.path.join(os.path.dirname(__file__), "dirt.png") # ← Set this to your actual image file path
+            texture_scale = (100.0, 100.0)  # Tiling factor
+
+
+            size = 100.0
+            # === Create a simple quad plane (4 vertices, 1 face) ===
+            plane = UsdGeom.Mesh.Define(stage, plane_path)
+            points = Vt.Vec3fArray([
+                Gf.Vec3f(-size, -size, 0.01),
+                Gf.Vec3f( size, -size, 0.01),
+                Gf.Vec3f( size,  size, 0.01),
+                Gf.Vec3f(-size,  size, 0.01),
+            ])
+            faceVertexCounts = Vt.IntArray([4])
+            faceVertexIndices = Vt.IntArray([0, 1, 2, 3])
+            plane.CreatePointsAttr(points)
+            plane.CreateFaceVertexCountsAttr(faceVertexCounts)
+            plane.CreateFaceVertexIndicesAttr(faceVertexIndices)
+
+            # Add UVs to the plane
+            uvs = Vt.Vec2fArray([
+                Gf.Vec2f(0.0, 0.0),
+                Gf.Vec2f(texture_scale[0], 0.0),
+                Gf.Vec2f(texture_scale[0], texture_scale[1]),
+                Gf.Vec2f(0.0, texture_scale[1]),
+            ])
+            primvars_api = UsdGeom.PrimvarsAPI(plane)
+            st = primvars_api.CreatePrimvar("st", Sdf.ValueTypeNames.Float2Array, UsdGeom.Tokens.vertex)
+            st.Set(uvs)
+
+            # === Create material with a texture ===
+            material = UsdShade.Material.Define(stage, material_path)
+            shader = UsdShade.Shader.Define(stage, material_path + "/Shader")
+            shader.CreateIdAttr("UsdPreviewSurface")
+
+            # Texture shader
+            texture_shader = UsdShade.Shader.Define(stage, material_path + "/Texture")
+            texture_shader.CreateIdAttr("UsdUVTexture")
+            texture_shader.CreateInput("file", Sdf.ValueTypeNames.Asset).Set(texture_file_path)
+            texture_shader.CreateInput("wrapS", Sdf.ValueTypeNames.Token).Set("repeat")
+            texture_shader.CreateInput("wrapT", Sdf.ValueTypeNames.Token).Set("repeat")
+
+            # Primvar reader to use the UVs we defined
+            st_reader = UsdShade.Shader.Define(stage, material_path + "/PrimVarReader")
+            st_reader.CreateIdAttr("UsdPrimvarReader_float2")
+            st_reader.CreateInput("varname", Sdf.ValueTypeNames.Token).Set("st")
+
+            # Connect reader to texture
+            texture_shader.CreateInput("st", Sdf.ValueTypeNames.Float2).ConnectToSource(st_reader.ConnectableAPI(), "result")
+
+            # Connect texture to surface shader
+            shader.CreateInput("diffuseColor", Sdf.ValueTypeNames.Color3f).ConnectToSource(texture_shader.ConnectableAPI(), "rgb")
+
+            # Finish material
+            material.CreateSurfaceOutput().ConnectToSource(shader.ConnectableAPI(), "surface")
+
+            # Bind material to the plane
+            UsdShade.MaterialBindingAPI(plane).Bind(material)
+
+
+
         # Add a distant light
         stage = omni.usd.get_context().get_stage()
         light_prim = stage.DefinePrim("/World/lightDistant", "DistantLight")
         # Use the correct API to set attributes
         light_prim.GetAttribute("inputs:intensity").Set(3000.0)
         light_prim.GetAttribute("inputs:color").Set(Gf.Vec3f(0.75, 0.75, 0.75))
+
+
+        create_ground_material()
 
         import_config = _urdf.ImportConfig()
         import_config.convex_decomp = False
@@ -106,29 +176,6 @@ class URDFLoaderApp:
                 xform.AddTranslateOp().Set((0, 0, 2.2))
             else:
                 xform_api.Set((0, 0, 2.2))
-
-        # material_path = "/World/Looks/BlueMaterial"
-        # material_body = UsdShade.Material.Define(stage, material_path)
-        # shader = UsdShade.Shader.Define(stage, material_path + "/Shader")
-        # shader.CreateIdAttr("UsdPreviewSurface")
-        # shader.CreateInput("diffuseColor", Sdf.ValueTypeNames.Color3f).Set(Gf.Vec3f(0.0, 0.2, 1.0))  # Blue
-        # shader.CreateInput("roughness", Sdf.ValueTypeNames.Float).Set(0.4)
-        # material_body.CreateSurfaceOutput().ConnectToSource(shader, "surface")
-        # material_path = "/World/Looks/GreyMaterial"
-        # material_wheels = UsdShade.Material.Define(stage, material_path)
-        # shader = UsdShade.Shader.Define(stage, material_path + "/Shader")
-        # shader.CreateIdAttr("UsdPreviewSurface")
-        # shader.CreateInput("diffuseColor", Sdf.ValueTypeNames.Color3f).Set(Gf.Vec3f(0.0, 0.2, 1.0))  # Blue
-        # shader.CreateInput("roughness", Sdf.ValueTypeNames.Float).Set(0.4)
-        # material_wheels.CreateSurfaceOutput().ConnectToSource(shader, "surface")
-
-        # def bind_material_recursive(prim):
-        #     if prim.IsA(UsdGeom.Gprim):
-        #         UsdShade.MaterialBindingAPI(prim).Bind(material_body)
-        #     for child in prim.GetChildren():
-        #         bind_material_recursive(child)
-
-        # bind_material_recursive(robot_prim)
 
         camera_configs = [
             {
@@ -271,11 +318,6 @@ class JointStateListener(Node):
         # self.front = float(np.unwrap([self.front, joint_positions.get('front', 0)])[-1])
         # self.back = float(np.unwrap([self.back, joint_positions.get('back', 0)])[-1])
         self.speed = joint_positions.get('speed', 0)
-
-
-
-
-
 
 
 
