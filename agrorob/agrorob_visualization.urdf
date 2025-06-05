@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot
+  name="agrorob_visualization">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.048158 -0.011907 -0.29729"
+        rpy="0 0 0" />
+      <mass
+        value="109.44" />
+      <inertia
+        ixx="11.552"
+        ixy="8.0751E-05"
+        ixz="0.09927"
+        iyy="6.1568"
+        iyz="0.011191"
+        izz="16.673" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.6 0.6 0.7 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="shin_RR">
+    <inertial>
+      <origin
+        xyz="-1.6198E-05 -0.18089 -0.36666"
+        rpy="0 0 0" />
+      <mass
+        value="13.879" />
+      <inertia
+        ixx="0.17331"
+        ixy="4.2107E-05"
+        ixz="1.8205E-06"
+        iyy="0.16512"
+        iyz="-0.012091"
+        izz="0.098891" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/shin_RR.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.74902 0.74902 0.74902 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/shin_RR.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="body_shin_RR"
+    type="continuous">
+    <origin
+      xyz="-1.5189 -0.91134 -0.59348"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="shin_RR" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="wheel_RR">
+    <inertial>
+      <origin
+        xyz="5.09761597659031E-05 -0.00621804725393116 -5.2513144545463E-05"
+        rpy="0 0 0" />
+      <mass
+        value="15.2882363411273" />
+      <inertia
+        ixx="0.750826999841358"
+        ixy="-3.17312090709986E-05"
+        ixz="1.13856033648885E-05"
+        iyy="1.20927676163548"
+        iyz="2.64143117689303E-05"
+        izz="0.750817779574298" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/wheel_RR.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.250980392156863 0.250980392156863 0.250980392156863 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/wheel_RR.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="shin_wheel_RR"
+    type="continuous">
+    <origin
+      xyz="0 0 -0.62885"
+      rpy="0 0 0" />
+    <parent
+      link="shin_RR" />
+    <child
+      link="wheel_RR" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="shin_RL">
+    <inertial>
+      <origin
+        xyz="1.6198E-05 0.18089 -0.36666"
+        rpy="0 0 0" />
+      <mass
+        value="13.879" />
+      <inertia
+        ixx="0.17331"
+        ixy="4.2107E-05"
+        ixz="-1.8188E-06"
+        iyy="0.16512"
+        iyz="0.012091"
+        izz="0.09889" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/shin_RL.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.74902 0.74902 0.74902 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/shin_RL.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="body_shin_RL"
+    type="continuous">
+    <origin
+      xyz="-1.5189 0.88866 -0.59348"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="shin_RL" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="wheel_RL">
+    <inertial>
+      <origin
+        xyz="5.0977E-05 0.006218 5.2513E-05"
+        rpy="0 0 0" />
+      <mass
+        value="15.288" />
+      <inertia
+        ixx="0.75083"
+        ixy="3.1732E-05"
+        ixz="-1.1386E-05"
+        iyy="1.2093"
+        iyz="2.6415E-05"
+        izz="0.75082" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/wheel_RL.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25098 0.25098 0.25098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/wheel_RL.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="shin_wheel_RL"
+    type="continuous">
+    <origin
+      xyz="0 0 -0.62885"
+      rpy="0 0 0" />
+    <parent
+      link="shin_RL" />
+    <child
+      link="wheel_RL" />
+    <axis
+      xyz="0 -1 0" />
+  </joint>
+  <link
+    name="shin_FR">
+    <inertial>
+      <origin
+        xyz="-1.6198E-05 -0.18089 -0.36666"
+        rpy="0 0 0" />
+      <mass
+        value="13.879" />
+      <inertia
+        ixx="0.17331"
+        ixy="4.2107E-05"
+        ixz="1.8193E-06"
+        iyy="0.16512"
+        iyz="-0.012091"
+        izz="0.09889" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/shin_FR.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.74902 0.74902 0.74902 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/shin_FR.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="body_shin_FR"
+    type="continuous">
+    <origin
+      xyz="1.4791 -0.91134 -0.59348"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="shin_FR" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="wheel_FR">
+    <inertial>
+      <origin
+        xyz="5.0976E-05 -0.012851 -5.2514E-05"
+        rpy="0 0 0" />
+      <mass
+        value="15.288" />
+      <inertia
+        ixx="0.75083"
+        ixy="-3.1732E-05"
+        ixz="1.1386E-05"
+        iyy="1.2093"
+        iyz="2.6415E-05"
+        izz="0.75082" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/wheel_FR.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25098 0.25098 0.25098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/wheel_FR.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="shin_wheel_FR"
+    type="continuous">
+    <origin
+      xyz="0 0 -0.62885"
+      rpy="0 0 0" />
+    <parent
+      link="shin_FR" />
+    <child
+      link="wheel_FR" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="shin_FL">
+    <inertial>
+      <origin
+        xyz="1.6198E-05 0.18089 -0.36666"
+        rpy="0 0 0" />
+      <mass
+        value="13.879" />
+      <inertia
+        ixx="0.17331"
+        ixy="4.2107E-05"
+        ixz="-1.819E-06"
+        iyy="0.16512"
+        iyz="0.012091"
+        izz="0.09889" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/shin_FL.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.74902 0.74902 0.74902 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/shin_FL.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="body_shin_FL"
+    type="continuous">
+    <origin
+      xyz="1.4791 0.88866 -0.59348"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="shin_FL" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="wheel_FL">
+    <inertial>
+      <origin
+        xyz="5.0977E-05 0.006218 5.2514E-05"
+        rpy="0 0 0" />
+      <mass
+        value="15.288" />
+      <inertia
+        ixx="0.75083"
+        ixy="3.1732E-05"
+        ixz="-1.1386E-05"
+        iyy="1.2093"
+        iyz="2.6415E-05"
+        izz="0.75082" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/wheel_FL.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25098 0.25098 0.25098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="meshes/wheel_FL.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="shin_wheel_FL"
+    type="continuous">
+    <origin
+      xyz="0 0 -0.62885"
+      rpy="0 0 0" />
+    <parent
+      link="shin_FL" />
+    <child
+      link="wheel_FL" />
+    <axis
+      xyz="0 -1 0" />
+  </joint>
+</robot>

@@ -1,0 +1,1 @@
+controller_joint_names: ['', 'body_shin_RR', 'shin_wheel_RR', 'body_shin_RL', 'shin_wheel_RL', 'body_shin_FR', 'shin_wheel_FR', 'body_shin_FL', 'shin_wheel_FL', ]

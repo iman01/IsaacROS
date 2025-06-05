@@ -1,7 +1,12 @@
 # Isaac ROS
 
 ## Overview
-This repository is designed to work with Isaac Lab and ROS 2 Humble distribution. Follow the steps below to set up your environment.
+
+## Overview
+
+This repository provides a simulation environment for the Agrorob robot using Isaac Lab, with seamless integration to ROS 2 Humble. The robot can be controlled via a dedicated frontend application, which also allows users to view live camera feeds from the robot.
+
+This project is built to work with Isaac Lab and ROS 2 Humble. Please follow the steps below to set up your environment.
 
 ---
 
@@ -51,9 +56,9 @@ If everything was installed as deafult you can also run `./run.sh` to run both t
     ```
 2. Source the ROS environment.
     ```bash
-    source opt\ros\humbe\setup.sh
+    source opt/ros/humbe/setup.sh
     ```
-3. Run `loader.py`: 
+3. Run `simulation/loader.py`: 
     ```bash
     python loader.py
     ```   
@@ -68,11 +73,11 @@ Or run the `./run_isaac.sh` if everything is installed as instructed by installa
 
 2. Source the ROS environment.
     ```bash
-    source opt\ros\humbe\setup.sh
+    source opt/ros/humbe/setup.sh
     ```
 3. Run `contoller.py`: 
     ```bash
-    python controller.py
+    python frontend/main.py
     ```  
 Or run the `./run_fronted.sh` if everything was installed as deafult
 
@@ -92,8 +97,3 @@ For any issues or questions, feel free to open an issue in this repository or co
 ## License
 This project is licensed under the Apache License 2.0. See the [LICENSE](./LICENSE) file for details.
 
-
-
-TODO add licencese to the project 
-
-TODO zrobic .sh files
