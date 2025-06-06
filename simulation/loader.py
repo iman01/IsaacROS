@@ -9,34 +9,45 @@ from sensor_msgs.msg import Image
 import numpy as np
 
 
+simulation_app = SimulationApp({"headless": False})
+
+
+import isaacsim.core.utils.stage as stage_utils
+import isaacsim.core.utils.prims as prim_utils
+import isaacsim.core.utils.extensions as extensions
+import isaacsim.core.utils.numpy.rotations as rot_utils
+from isaacsim.core.api import World
+from isaacsim.core.api.objects import GroundPlane
+from isaacsim.asset.importer.urdf import _urdf
+
+import omni.kit.commands
+import omni.usd
+from pxr import UsdPhysics, Gf, UsdGeom
+from isaacsim.sensors.camera import Camera
+import omni.syntheticdata._syntheticdata as sd        
+import omni.replicator.core as rep
+import omni.graph.core as og
+
+extensions.enable_extension("isaacsim.ros2.bridge")
+
+# for materials 
+from pxr import UsdShade, Sdf,UsdGeom, Gf, Vt
+
+import omni.usd
+from pxr import UsdPhysics
+import isaacsim.core.utils.prims as prim_utils
+from isaacsim.sensors.camera import Camera
+
+
 
 def ros_spin(node):
     rclpy.spin(node)
 
 class URDFLoaderApp:
     def __init__(self):
-        self.simulation_app = SimulationApp({"headless": False})
         self.world = None
 
     def setup_scene(self):
-        import isaacsim.core.utils.stage as stage_utils
-        import isaacsim.core.utils.prims as prim_utils
-        import isaacsim.core.utils.extensions as extensions
-        import isaacsim.core.utils.numpy.rotations as rot_utils
-        from isaacsim.core.api import World
-        from isaacsim.core.api.objects import GroundPlane
-        from isaacsim.asset.importer.urdf import _urdf
-
-        import omni.kit.commands
-        import omni.usd
-        from pxr import UsdPhysics, Gf, UsdGeom
-        from isaacsim.sensors.camera import Camera
-        import omni.syntheticdata._syntheticdata as sd        
-        import omni.replicator.core as rep
-        import omni.graph.core as og
-
-        extensions.enable_extension("isaacsim.ros2.bridge")
-
         self.cameras = {}
 
         def publish_rgb(camera: Camera, cam_name, freq):
@@ -71,7 +82,6 @@ class URDFLoaderApp:
 
 
         def create_ground_material():
-            from pxr import UsdShade, Sdf,UsdGeom, Gf, Vt
 
             plane_path = "/World/TexturedPlane"
             material_path = "/World/Materials/TiledMaterial"
@@ -220,10 +230,6 @@ class URDFLoaderApp:
 
 
         self.setup_scene()
-        import omni.usd
-        from pxr import UsdPhysics
-        import isaacsim.core.utils.prims as prim_utils
-        from isaacsim.sensors.camera import Camera
 
 
 
@@ -270,7 +276,7 @@ class URDFLoaderApp:
 
 
 
-        while self.simulation_app.is_running():
+        while simulation_app.is_running():
 
             velocity = node.speed * 250
 
@@ -281,12 +287,12 @@ class URDFLoaderApp:
 
 
             self.world.step(render=True)
-            self.simulation_app.update()
+            simulation_app.update()
 
         
         
         
-        self.simulation_app.close()
+        simulation_app.close()
         node.destroy_node()
         rclpy.shutdown()
 
