@@ -9,7 +9,7 @@ from sensor_msgs.msg import Image
 import numpy as np
 
 
-simulation_app = SimulationApp({"headless": False})
+simulation_app = SimulationApp()
 
 
 import isaacsim.core.utils.stage as stage_utils
@@ -41,7 +41,10 @@ from isaacsim.sensors.camera import Camera
 
 
 def ros_spin(node):
-    rclpy.spin(node)
+    try:
+        rclpy.spin(node)
+    except rclpy.executors.ExternalShutdownException:
+        print("ROS2 node has been shut down.")
 
 class URDFLoaderApp:
     def __init__(self):
@@ -275,23 +278,22 @@ class URDFLoaderApp:
             body_shin_drive_apis[key].GetStiffnessAttr().Set(200.0)
 
 
+        try:
+            while simulation_app.is_running():
 
-        while simulation_app.is_running():
+                velocity = node.speed * 250
 
-            velocity = node.speed * 250
-
-            for key in ["FR", "RR", "FL", "RL"]:
-                drive_apis[key].GetTargetVelocityAttr().Set(velocity if key in ["FR", "RR"] else -velocity)
-                body_shin_drive_apis[key].GetTargetPositionAttr().Set(-node.front * 180 / 3.14 if key in ["FR", "FL"] else -node.back* 180 / 3.14)
+                for key in ["FR", "RR", "FL", "RL"]:
+                    drive_apis[key].GetTargetVelocityAttr().Set(velocity if key in ["FR", "RR"] else -velocity)
+                    body_shin_drive_apis[key].GetTargetPositionAttr().Set(-node.front * 180 / 3.14 if key in ["FR", "FL"] else -node.back* 180 / 3.14)
 
 
 
-            self.world.step(render=True)
-            simulation_app.update()
+                self.world.step(render=True)
+                simulation_app.update()
+        except KeyboardInterrupt:
+            print("Simulation interrupted by user.")
 
-        
-        
-        
         simulation_app.close()
         node.destroy_node()
         rclpy.shutdown()
@@ -319,10 +321,6 @@ class JointStateListener(Node):
         joint_positions = dict(zip(msg.name, msg.position))
         self.front  = joint_positions.get('front', 0)
         self.back = joint_positions.get('back', 0)
-
-        #TODO make smooth movment 
-        # self.front = float(np.unwrap([self.front, joint_positions.get('front', 0)])[-1])
-        # self.back = float(np.unwrap([self.back, joint_positions.get('back', 0)])[-1])
         self.speed = joint_positions.get('speed', 0)
 
 
