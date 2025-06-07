@@ -1,5 +1,7 @@
 from isaacsim import SimulationApp
-import os 
+import os
+
+import sys
 
 import rclpy
 from rclpy.node import Node
@@ -9,7 +11,7 @@ from sensor_msgs.msg import Image
 import numpy as np
 
 
-simulation_app = SimulationApp()
+simulation_app = SimulationApp({"headless": "--headless" in sys.argv})
 
 
 import isaacsim.core.utils.stage as stage_utils
@@ -24,20 +26,18 @@ import omni.kit.commands
 import omni.usd
 from pxr import UsdPhysics, Gf, UsdGeom
 from isaacsim.sensors.camera import Camera
-import omni.syntheticdata._syntheticdata as sd        
+import omni.syntheticdata._syntheticdata as sd
 import omni.replicator.core as rep
 import omni.graph.core as og
 
 extensions.enable_extension("isaacsim.ros2.bridge")
 
-# for materials 
-from pxr import UsdShade, Sdf,UsdGeom, Gf, Vt
+from pxr import UsdShade, Sdf, UsdGeom, Gf, Vt
 
 import omni.usd
 from pxr import UsdPhysics
 import isaacsim.core.utils.prims as prim_utils
 from isaacsim.sensors.camera import Camera
-
 
 
 def ros_spin(node):
@@ -46,61 +46,33 @@ def ros_spin(node):
     except rclpy.executors.ExternalShutdownException:
         print("ROS2 node has been shut down.")
 
+
 class URDFLoaderApp:
     def __init__(self):
         self.world = None
 
-    def setup_scene(self):
-        self.cameras = {}
-
-        def publish_rgb(camera: Camera, cam_name, freq):
-            render_product = camera._render_product_path
-            step_size = int(60/freq)
-            topic_name = cam_name+"_rgb"
-            queue_size = 1
-            node_namespace = ""
-            frame_id = camera.prim_path.split("/")[-1]
-
-            rv = omni.syntheticdata.SyntheticData.convert_sensor_type_to_rendervar(sd.SensorType.Rgb.name)
-
-            writer = rep.writers.get(rv + "ROS2PublishImage")
-            writer.initialize(
-                frameId=frame_id,
-                nodeNamespace=node_namespace,
-                queueSize=queue_size,
-                topicName=topic_name
-            )
-            writer.attach([render_product])
-
-            gate_path = omni.syntheticdata.SyntheticData._get_node_path(
-                rv + "IsaacSimulationGate", render_product
-            )
-            og.Controller.attribute(gate_path + ".inputs:step").set(step_size)
-
-            return
-
-        # Create world and ground plane
-        self.world = World(stage_units_in_meters=1.0)
-        GroundPlane("/World/defaultGroundPlane", size=100.0)
-
-
-        def create_ground_material():
-
+    def setup_scene(self): 
+        def create_ground():
+            self.world = World(stage_units_in_meters=1.0)
+            GroundPlane("/World/defaultGroundPlane", size=100.0)
             plane_path = "/World/TexturedPlane"
             material_path = "/World/Materials/TiledMaterial"
-            texture_file_path =  os.path.join(os.path.dirname(__file__), "dirt.png") # ← Set this to your actual image file path
+            texture_file_path = os.path.join(
+                os.path.dirname(__file__), "dirt.png"
+            )  # ← Set this to your actual image file path
             texture_scale = (100.0, 100.0)  # Tiling factor
-
 
             size = 100.0
             # === Create a simple quad plane (4 vertices, 1 face) ===
             plane = UsdGeom.Mesh.Define(stage, plane_path)
-            points = Vt.Vec3fArray([
-                Gf.Vec3f(-size, -size, 0.01),
-                Gf.Vec3f( size, -size, 0.01),
-                Gf.Vec3f( size,  size, 0.01),
-                Gf.Vec3f(-size,  size, 0.01),
-            ])
+            points = Vt.Vec3fArray(
+                [
+                    Gf.Vec3f(-size, -size, 0.01),
+                    Gf.Vec3f(size, -size, 0.01),
+                    Gf.Vec3f(size, size, 0.01),
+                    Gf.Vec3f(-size, size, 0.01),
+                ]
+            )
             faceVertexCounts = Vt.IntArray([4])
             faceVertexIndices = Vt.IntArray([0, 1, 2, 3])
             plane.CreatePointsAttr(points)
@@ -108,14 +80,18 @@ class URDFLoaderApp:
             plane.CreateFaceVertexIndicesAttr(faceVertexIndices)
 
             # Add UVs to the plane
-            uvs = Vt.Vec2fArray([
-                Gf.Vec2f(0.0, 0.0),
-                Gf.Vec2f(texture_scale[0], 0.0),
-                Gf.Vec2f(texture_scale[0], texture_scale[1]),
-                Gf.Vec2f(0.0, texture_scale[1]),
-            ])
+            uvs = Vt.Vec2fArray(
+                [
+                    Gf.Vec2f(0.0, 0.0),
+                    Gf.Vec2f(texture_scale[0], 0.0),
+                    Gf.Vec2f(texture_scale[0], texture_scale[1]),
+                    Gf.Vec2f(0.0, texture_scale[1]),
+                ]
+            )
             primvars_api = UsdGeom.PrimvarsAPI(plane)
-            st = primvars_api.CreatePrimvar("st", Sdf.ValueTypeNames.Float2Array, UsdGeom.Tokens.vertex)
+            st = primvars_api.CreatePrimvar(
+                "st", Sdf.ValueTypeNames.Float2Array, UsdGeom.Tokens.vertex
+            )
             st.Set(uvs)
 
             # === Create material with a texture ===
@@ -126,7 +102,9 @@ class URDFLoaderApp:
             # Texture shader
             texture_shader = UsdShade.Shader.Define(stage, material_path + "/Texture")
             texture_shader.CreateIdAttr("UsdUVTexture")
-            texture_shader.CreateInput("file", Sdf.ValueTypeNames.Asset).Set(texture_file_path)
+            texture_shader.CreateInput("file", Sdf.ValueTypeNames.Asset).Set(
+                texture_file_path
+            )
             texture_shader.CreateInput("wrapS", Sdf.ValueTypeNames.Token).Set("repeat")
             texture_shader.CreateInput("wrapT", Sdf.ValueTypeNames.Token).Set("repeat")
 
@@ -136,92 +114,129 @@ class URDFLoaderApp:
             st_reader.CreateInput("varname", Sdf.ValueTypeNames.Token).Set("st")
 
             # Connect reader to texture
-            texture_shader.CreateInput("st", Sdf.ValueTypeNames.Float2).ConnectToSource(st_reader.ConnectableAPI(), "result")
+            texture_shader.CreateInput("st", Sdf.ValueTypeNames.Float2).ConnectToSource(
+                st_reader.ConnectableAPI(), "result"
+            )
 
             # Connect texture to surface shader
-            shader.CreateInput("diffuseColor", Sdf.ValueTypeNames.Color3f).ConnectToSource(texture_shader.ConnectableAPI(), "rgb")
+            shader.CreateInput(
+                "diffuseColor", Sdf.ValueTypeNames.Color3f
+            ).ConnectToSource(texture_shader.ConnectableAPI(), "rgb")
 
             # Finish material
-            material.CreateSurfaceOutput().ConnectToSource(shader.ConnectableAPI(), "surface")
+            material.CreateSurfaceOutput().ConnectToSource(
+                shader.ConnectableAPI(), "surface"
+            )
 
             # Bind material to the plane
             UsdShade.MaterialBindingAPI(plane).Bind(material)
 
+        def create_robot():
+            import_config = _urdf.ImportConfig()
+            import_config.convex_decomp = False
+            import_config.fix_base = False
+            import_config.make_default_prim = True
+            import_config.self_collision = False
+            import_config.distance_scale = 1
+            import_config.density = 0.0
 
+            urdf_path = "agrorob/agrorob_visualization.urdf"
 
-        # Add a distant light
-        stage = omni.usd.get_context().get_stage()
-        light_prim = stage.DefinePrim("/World/lightDistant", "DistantLight")
-        # Use the correct API to set attributes
-        light_prim.GetAttribute("inputs:intensity").Set(3000.0)
-        light_prim.GetAttribute("inputs:color").Set(Gf.Vec3f(0.75, 0.75, 0.75))
+            result, robot_model = omni.kit.commands.execute(
+                "URDFParseFile", urdf_path=urdf_path, import_config=import_config
+            )
 
+            result, prim_path = omni.kit.commands.execute(
+                "URDFImportRobot",
+                urdf_robot=robot_model,
+                import_config=import_config,
+            )
 
-        create_ground_material()
+            robot_prim = prim_utils.get_prim_at_path(prim_path)
+            if robot_prim:
+                xform_api = robot_prim.GetAttribute("xformOp:translate")
+                if not xform_api:
+                    xform = UsdGeom.Xformable(robot_prim)
+                    xform.AddTranslateOp().Set((0, 0, 2.2))
+                else:
+                    xform_api.Set((0, 0, 2.2))
 
-        import_config = _urdf.ImportConfig()
-        import_config.convex_decomp = False
-        import_config.fix_base = False
-        import_config.make_default_prim = True
-        import_config.self_collision = False
-        import_config.distance_scale = 1
-        import_config.density = 0.0
+        def configure_cameras():
+            def publish_rgb(camera: Camera, cam_name, freq):
+                render_product = camera._render_product_path
+                step_size = int(60 / freq)
+                topic_name = cam_name + "_rgb"
+                queue_size = 1
+                node_namespace = ""
+                frame_id = camera.prim_path.split("/")[-1]
 
-        urdf_path = "agrorob/agrorob_visualization.urdf"
+                rv = omni.syntheticdata.SyntheticData.convert_sensor_type_to_rendervar(
+                    sd.SensorType.Rgb.name
+                )
 
-        result, robot_model = omni.kit.commands.execute(
-            "URDFParseFile",
-            urdf_path=urdf_path,
-            import_config=import_config
-        )
+                writer = rep.writers.get(rv + "ROS2PublishImage")
+                writer.initialize(
+                    frameId=frame_id,
+                    nodeNamespace=node_namespace,
+                    queueSize=queue_size,
+                    topicName=topic_name,
+                )
+                writer.attach([render_product])
 
-        result, prim_path = omni.kit.commands.execute(
-            "URDFImportRobot",
-            urdf_robot=robot_model,
-            import_config=import_config,
-        )
+                gate_path = omni.syntheticdata.SyntheticData._get_node_path(
+                    rv + "IsaacSimulationGate", render_product
+                )
+                og.Controller.attribute(gate_path + ".inputs:step").set(step_size)
 
-        robot_prim = prim_utils.get_prim_at_path(prim_path)
-        if robot_prim:
-            xform_api = robot_prim.GetAttribute("xformOp:translate")
-            if not xform_api:
-                xform = UsdGeom.Xformable(robot_prim)
-                xform.AddTranslateOp().Set((0, 0, 2.2))
-            else:
-                xform_api.Set((0, 0, 2.2))
-
-        camera_configs = [
+                return
+            self.cameras = {}
+            camera_configs = [
             {
                 "name": "camera_front",
                 "prim_path": "/agrorob_visualization/base_link/camera_front",
                 "position": np.array([1.45, 0, 2]),
-                "orientation": rot_utils.euler_angles_to_quats(np.array([0, 15, 0]), degrees=True),
+                "orientation": rot_utils.euler_angles_to_quats(
+                    np.array([0, 15, 0]), degrees=True
+                ),
             },
             {
                 "name": "camera_left",
                 "prim_path": "/agrorob_visualization/base_link/camera_left",
                 "position": np.array([1.58, 0.5, 1.95]),
-                "orientation": rot_utils.euler_angles_to_quats(np.array([0, 90, 0]), degrees=True),
+                "orientation": rot_utils.euler_angles_to_quats(
+                    np.array([0, 90, 0]), degrees=True
+                ),
             },
             {
                 "name": "camera_right",
                 "prim_path": "/agrorob_visualization/base_link/camera_right",
                 "position": np.array([1.58, -0.52, 1.95]),
-                "orientation": rot_utils.euler_angles_to_quats(np.array([0, 90, 0]), degrees=True),
+                "orientation": rot_utils.euler_angles_to_quats(
+                    np.array([0, 90, 0]), degrees=True
+                ),
             },
         ]
 
-        for cam in camera_configs:
-            camera = Camera(
-                prim_path=cam["prim_path"],
-                position=cam["position"],
-                frequency=20,
-                resolution=(256, 256),
-                orientation=cam["orientation"],
-            )
-            camera.initialize()
-            publish_rgb(camera, cam["name"], freq=20)
-            self.cameras[cam["name"]] = camera
+            for cam in camera_configs:
+                camera = Camera(
+                    prim_path=cam["prim_path"],
+                    position=cam["position"],
+                    frequency=60,
+                    resolution=(256, 256),
+                    orientation=cam["orientation"],
+                )
+                camera.initialize()
+                publish_rgb(camera, cam["name"], freq=60)
+                self.cameras[cam["name"]] = camera
+        
+        stage = omni.usd.get_context().get_stage()
+        light_prim = stage.DefinePrim("/World/lightDistant", "DistantLight")
+        light_prim.GetAttribute("inputs:intensity").Set(3000.0)
+        light_prim.GetAttribute("inputs:color").Set(Gf.Vec3f(0.75, 0.75, 0.75))
+
+        create_ground()
+        create_robot()
+        configure_cameras()
 
         self.world.reset()
 
@@ -231,12 +246,9 @@ class URDFLoaderApp:
         ros_thread = threading.Thread(target=ros_spin, args=(node,), daemon=True)
         ros_thread.start()
 
-
         self.setup_scene()
 
-
-
-        #WHEELS
+        # WHEELS
         wheel_joints = {
             "FL": "/agrorob_visualization/joints/shin_wheel_FL",
             "FR": "/agrorob_visualization/joints/shin_wheel_FR",
@@ -257,8 +269,7 @@ class URDFLoaderApp:
             drive_apis[key].GetDampingAttr().Set(6000.0)
             drive_apis[key].GetStiffnessAttr().Set(0.0)
 
-
-        #ROTATION JOINTS
+        # ROTATION JOINTS
         body_shin_joints = {
             "FL": "/agrorob_visualization/joints/body_shin_FL",
             "FR": "/agrorob_visualization/joints/body_shin_FR",
@@ -269,7 +280,9 @@ class URDFLoaderApp:
         for key, path in body_shin_joints.items():
             joint_prim = stage.GetPrimAtPath(path)
             if joint_prim:
-                body_shin_drive_apis[key] = UsdPhysics.DriveAPI.Get(joint_prim, "angular")
+                body_shin_drive_apis[key] = UsdPhysics.DriveAPI.Get(
+                    joint_prim, "angular"
+                )
         for key in ["FR", "RR", "FL", "RL"]:
             if key not in body_shin_drive_apis:
                 print(f"Warning: Body_shin Drive API for {key} not found.")
@@ -277,17 +290,21 @@ class URDFLoaderApp:
             body_shin_drive_apis[key].GetDampingAttr().Set(100.0)
             body_shin_drive_apis[key].GetStiffnessAttr().Set(200.0)
 
-
         try:
+            # Main simulation loop
             while simulation_app.is_running():
 
                 velocity = node.speed * 250
 
                 for key in ["FR", "RR", "FL", "RL"]:
-                    drive_apis[key].GetTargetVelocityAttr().Set(velocity if key in ["FR", "RR"] else -velocity)
-                    body_shin_drive_apis[key].GetTargetPositionAttr().Set(-node.front * 180 / 3.14 if key in ["FR", "FL"] else -node.back* 180 / 3.14)
-
-
+                    drive_apis[key].GetTargetVelocityAttr().Set(
+                        velocity if key in ["FR", "RR"] else -velocity
+                    )
+                    body_shin_drive_apis[key].GetTargetPositionAttr().Set(
+                        -node.front * 180 / 3.14
+                        if key in ["FR", "FL"]
+                        else -node.back * 180 / 3.14
+                    )
 
                 self.world.step(render=True)
                 simulation_app.update()
@@ -299,17 +316,11 @@ class URDFLoaderApp:
         rclpy.shutdown()
 
 
-
-
-
 class JointStateListener(Node):
     def __init__(self):
-        super().__init__('joint_state_listener')
+        super().__init__("joint_state_listener")
         self.subscription = self.create_subscription(
-            JointState,
-            '/joint_states',
-            self.listener_callback,
-            10
+            JointState, "/joint_states", self.listener_callback, 10
         )
         self.subscription  # prevent unused variable warning
 
@@ -319,10 +330,9 @@ class JointStateListener(Node):
 
     def listener_callback(self, msg):
         joint_positions = dict(zip(msg.name, msg.position))
-        self.front  = joint_positions.get('front', 0)
-        self.back = joint_positions.get('back', 0)
-        self.speed = joint_positions.get('speed', 0)
-
+        self.front = joint_positions.get("front", 0)
+        self.back = joint_positions.get("back", 0)
+        self.speed = joint_positions.get("speed", 0)
 
 
 if __name__ == "__main__":
