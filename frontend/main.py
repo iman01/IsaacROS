@@ -7,12 +7,10 @@ from rclpy.qos import QoSProfile
 from geometry_msgs.msg import Quaternion
 from sensor_msgs.msg import JointState
 from tf2_ros import TransformBroadcaster, TransformStamped
-import random
 
 import threading
 from sensor_msgs.msg import Image
 import cv2
-import numpy as np
 from rclpy.executors import MultiThreadedExecutor
 
 from cv_bridge import CvBridge
@@ -178,8 +176,6 @@ class Game:
 
 
     def handle_gamepad_input(self):
-        dt = 0.1
-        # Get the axes values
         if self.crab:
             deadzone = 0.3
             x = self.joystick.get_axis(0) 
@@ -191,11 +187,10 @@ class Game:
                 self.front_rot = -atan2(y,x) + pi/2
             self.back_rot = self.front_rot
         else:
-            
-            self.front_rot += (self.joystick.get_axis(0) if abs(self.joystick.get_axis(0)) > 0.1 else 0 ) * dt
-            self.front_rot = max(-pi/2, min(self.front_rot, pi/2))
+            self.front_rot =    self.joystick.get_axis(0) * pi/2
+            # self.front_rot += (self.joystick.get_axis(0) if abs(self.joystick.get_axis(0)) > 0.1 else 0 ) * dt
+            # self.front_rot = max(-pi/2, min(self.front_rot, pi/2))
             self.back_rot = -self.front_rot 
-        # axois 2 l2 axis 5 r2 
 
         self.speed = (self.joystick.get_axis(5) - self.joystick.get_axis(2))/2.0
 
@@ -308,12 +303,10 @@ if __name__ == '__main__':
 
     try:
         game.run()
+    except KeyboardInterrupt:
+        print("Keyboard interrupt received, shutting down.")
     finally:
         executor.shutdown()
         game.publisher.destroy_node()
         game.reciever.destroy_node()
         rclpy.shutdown()
-
-
-    # TODO move this to keyboard interrupt from the gaem 
-    rclpy.shutdown()
