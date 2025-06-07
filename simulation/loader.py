@@ -294,7 +294,7 @@ class URDFLoaderApp:
             # Main simulation loop
             while simulation_app.is_running():
 
-                velocity = node.speed * 250
+                velocity = node.speed * 400
 
                 for key in ["FR", "RR", "FL", "RL"]:
                     drive_apis[key].GetTargetVelocityAttr().Set(
