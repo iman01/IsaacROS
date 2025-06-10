@@ -2,8 +2,6 @@
 
 ## Overview
 
-## Overview
-
 This repository provides a simulation environment for the Agrorob robot using Isaac Lab, with seamless integration to ROS 2 Humble. The robot can be controlled via a dedicated frontend application, which also allows users to view live camera feeds from the robot.
 
 This project is built to work with Isaac Lab and ROS 2 Humble. Please follow the steps below to set up your environment.
@@ -82,11 +80,12 @@ Or run the `./run_isaac.sh` if everything is installed as instructed by installa
 Or run the `./run_fronted.sh` if everything was installed as deafult
 
 
-
-
-
-
-
+## Features
+1. The proportions of the robot and the placement of the three cameras are accurate to the real robot.
+2. Two steering modes are available: Normal and Crab.
+3. The frontend application show a live preview of the set direction of the wheels.
+4. Gamepads are supported as an input device for the controller.
+5. Analogue speed input dependent on the average of two gamepad trigger values.
 
 
 ## Support
