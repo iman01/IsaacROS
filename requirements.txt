@@ -1,0 +1,9 @@
+pygame==2.5.2
+numpy==1.26.4
+opencv-python==4.9.0.80
+# The following are ROS 2 Python packages, usually installed via ROS 2 tools:
+rclpy==1.9.3
+geometry_msgs==4.2.6
+sensor_msgs==4.2.6
+tf2_ros==0.32.1
+cv_bridge==3.2.1
