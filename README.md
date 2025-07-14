@@ -54,7 +54,7 @@ If everything was installed as deafult you can also run `./run.sh` to run both t
     ```
 2. Source the ROS environment.
     ```bash
-    source /opt/ros/humbel/setup.sh
+    source /opt/ros/humble/setup.sh
     ```
 3. Run `simulation/loader.py`: 
     ```bash
