@@ -8,6 +8,8 @@ from geometry_msgs.msg import Quaternion
 from sensor_msgs.msg import JointState
 from tf2_ros import TransformBroadcaster, TransformStamped
 
+
+
 import threading
 from sensor_msgs.msg import Image
 import cv2
@@ -43,7 +45,7 @@ class Game:
 
         self.front_rot = 0.0
         self.back_rot = 0.0
-        self.speed = 0.0
+        self.speed = 0.5
 
 
         self.bridge = CvBridge()

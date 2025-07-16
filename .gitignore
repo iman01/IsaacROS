@@ -1,2 +1,4 @@
 /isaacsim
 /isaaclab
+_out_sdrec/
+__pycache__/

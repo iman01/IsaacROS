@@ -20,10 +20,18 @@ import isaacsim.core.utils.extensions as extensions
 import isaacsim.core.utils.numpy.rotations as rot_utils
 from isaacsim.core.api import World
 from isaacsim.core.api.objects import GroundPlane
+
+
+
 from isaacsim.asset.importer.urdf import _urdf
 
 import omni.kit.commands
 import omni.usd
+
+import omni.replicator.core as rep
+
+from isaacsim.core.utils.semantics import add_update_semantics
+
 from pxr import UsdPhysics, Gf, UsdGeom
 from isaacsim.sensors.camera import Camera
 import omni.syntheticdata._syntheticdata as sd
@@ -31,6 +39,9 @@ import omni.replicator.core as rep
 import omni.graph.core as og
 
 extensions.enable_extension("isaacsim.ros2.bridge")
+extensions.enable_extension("isaacsim.replicator.synthetic_recorder")
+extensions.enable_extension("omni.kit.window.script_editor")
+
 
 from pxr import UsdShade, Sdf, UsdGeom, Gf, Vt
 
@@ -130,6 +141,59 @@ class URDFLoaderApp:
 
             # Bind material to the plane
             UsdShade.MaterialBindingAPI(plane).Bind(material)
+        
+        def create_objects():
+            usdc_path = "cropcraft/crops.usdc"
+
+            prim_path = "/World/Crops"
+
+            stage = omni.usd.get_context().get_stage()
+
+            omni.kit.commands.execute(
+                "CreateReference",
+                path_to=prim_path,
+                asset_path=usdc_path,
+                usd_context=omni.usd.get_context()
+            )   
+
+            xform = UsdGeom.Xform(stage.GetPrimAtPath(prim_path))
+            xform.AddTranslateOp().Set(Gf.Vec3d(0.0, -1.0, 0.0))  # Position
+            xform.AddRotateXYZOp().Set(Gf.Vec3f(0, 0, 0))        # Orientation
+
+            root_prim = stage.GetPrimAtPath(prim_path)
+
+
+
+            if not root_prim.IsValid():
+                print(f"[ERROR] Prim '{prim_path}' not found.")
+                return
+
+            current_class = "crop"
+
+            
+            for child in root_prim.GetChildren():
+                name = child.GetName()
+                if name == "_materials" or name == "stones":
+                    continue  
+                elif name.startswith("bed"):
+                    current_class = "maize"
+                elif name == "taraxacum" or name == "polygonum" or name == "portulaca":
+                    current_class = "weed"
+                else:
+                    print(f"[WARNING] UNKNOWN OBJECT FOUND: {name}")
+                    continue
+
+                if not child.IsValid():
+                    continue
+
+                print(f"[INFO] Labeling bed group: {child.GetPath()}")
+
+                for sub in child.GetChildren():
+                    if sub.IsValid():
+                        
+                        add_update_semantics(sub, current_class)
+
+
 
         def create_robot():
             import_config = _urdf.ImportConfig()
@@ -206,6 +270,7 @@ class URDFLoaderApp:
                 "orientation": rot_utils.euler_angles_to_quats(
                     np.array([0, 90, 0]), degrees=True
                 ),
+
             },
             {
                 "name": "camera_right",
@@ -228,15 +293,28 @@ class URDFLoaderApp:
                 camera.initialize()
                 publish_rgb(camera, cam["name"], freq=60)
                 self.cameras[cam["name"]] = camera
+
+
+
+
         
         stage = omni.usd.get_context().get_stage()
-        light_prim = stage.DefinePrim("/World/lightDistant", "DistantLight")
-        light_prim.GetAttribute("inputs:intensity").Set(3000.0)
+        rep.orchestrator.set_capture_on_play(True)
+        
+        light_prim = stage.DefinePrim("/World/lightDistant1", "DistantLight")
+        light_prim.GetAttribute("inputs:intensity").Set(1000.0)
         light_prim.GetAttribute("inputs:color").Set(Gf.Vec3f(0.75, 0.75, 0.75))
 
+        light_prim2 = stage.DefinePrim("/World/lightDistant2", "DistantLight")
+        light_prim2.GetAttribute("inputs:intensity").Set(1000.0)
+        light_prim2.GetAttribute("inputs:angle").Set(10)
+        light_prim2.GetAttribute("inputs:color").Set(Gf.Vec3f(0.75, 0.75, 0.75))
+
         create_ground()
+        create_objects()
         create_robot()
         configure_cameras()
+
 
         self.world.reset()
 
@@ -246,7 +324,11 @@ class URDFLoaderApp:
         ros_thread = threading.Thread(target=ros_spin, args=(node,), daemon=True)
         ros_thread.start()
 
+
+
+
         self.setup_scene()
+        
 
         # WHEELS
         wheel_joints = {
