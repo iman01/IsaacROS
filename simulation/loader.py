@@ -143,7 +143,7 @@ class URDFLoaderApp:
             UsdShade.MaterialBindingAPI(plane).Bind(material)
         
         def create_objects():
-            usdc_path = "cropcraft/crops.usdc"
+            usdc_path = "simulation/crops.usdc"
 
             prim_path = "/World/Crops"
 
