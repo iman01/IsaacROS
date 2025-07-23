@@ -96,7 +96,7 @@ If more assets were added to cropcraft, make sure textures in `textures` directo
    ```bash run_isaac.sh```
 2. Run the fronted to move the robot:
    ```bash run_frontend.sh```
-3. Configure Syntetic Data Recorder:
+3. Configure Synthetic Data Recorder:
    1. Add cameras to Render Produts (e. g. ~/agrorob_visualization/base_link/camera_left`)
    2. Set required output in `Parameters` section (rgb , bounding_box_2d_tight)
    3. Set output directory
