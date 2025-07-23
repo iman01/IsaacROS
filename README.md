@@ -6,6 +6,8 @@ This repository provides a simulation environment for the Agrorob robot using Is
 
 This project is built to work with Isaac Lab and ROS 2 Humble. Please follow the steps below to set up your environment.
 
+Scene is set up for bounding box dataset collection for computer vision model training. It already contains a field with maize and weeds generated with cropcraft.
+
 ---
 
 ## Installation Steps
@@ -79,6 +81,30 @@ Or run the `./run_isaac.sh` if everything is installed as instructed by installa
     ```  
 Or run the `./run_fronted.sh` if everything was installed as deafult
 
+### Field configuration
+1. Configure `simulation/agrorob_crops.yaml`
+
+2. From `simulation/` directory run cropcraft:
+   ```python ../cropcraft/cropcraft.py agrorob_crops.yaml```
+
+3. Open generated `crops.blend` file and export  contents of `generated` collection as usds
+
+If more assets were added to cropcraft, make sure textures in `textures` directory are updated 
+
+### Dataset generation
+1. Run the simulation:
+   ```bash run_isaac.sh```
+2. Run the fronted to move the robot:
+   ```bash run_frontend.sh```
+3. Configure Syntetic Data Recorder:
+   1. Add cameras to Render Produts (e. g. ~/agrorob_visualization/base_link/camera_left`)
+   2. Set required output in `Parameters` section (rgb , bounding_box_2d_tight)
+   3. Set output directory
+4. When robot starts movement, press Start
+
+Data will be saved to directory you specified, you can convert it to COCO or YOLO formats using python scripts from `data_collection/` 
+
+
 
 ## Features
 1. The proportions of the robot and the placement of the three cameras are accurate to the real robot.
@@ -86,6 +112,7 @@ Or run the `./run_fronted.sh` if everything was installed as deafult
 3. The frontend application show a live preview of the set direction of the wheels.
 4. Gamepads are supported as an input device for the controller.
 5. Analogue speed input dependent on the average of two gamepad trigger values.
+6. Dataset generation for AI training and testing.
 
 
 ## Support
