@@ -9,6 +9,7 @@ from sensor_msgs.msg import JointState
 import threading
 from sensor_msgs.msg import Image
 import numpy as np
+import yaml
 
 
 simulation_app = SimulationApp({"headless": "--headless" in sys.argv})
@@ -157,41 +158,53 @@ class URDFLoaderApp:
             )   
 
             xform = UsdGeom.Xform(stage.GetPrimAtPath(prim_path))
-            xform.AddTranslateOp().Set(Gf.Vec3d(0.0, -1.0, 0.0))  # Position
+            xform.AddTranslateOp().Set(Gf.Vec3d(0.0, -1.0, 0.02))  # Position
             xform.AddRotateXYZOp().Set(Gf.Vec3f(0, 0, 0))        # Orientation
 
             root_prim = stage.GetPrimAtPath(prim_path)
 
 
 
+            with open("simulation/agrorob_crops.yaml", 'r') as f:
+                config = yaml.safe_load(f)
+
+            beds_config = config.get("field", {}).get("beds", {})
+            weeds_config = config.get("field", {}).get("weeds", {})
+
+            # Build label lookup dictionaries
+            bed_labels = {name: data.get("plant_type", "unknown") for name, data in beds_config.items()}
+            weed_labels = {name: "weed" for name in weeds_config.keys()}
+
+            # Combine for fast lookup
+            all_labels = {**bed_labels, **weed_labels}
+
+            # Hardcoded exclusions
+            EXCLUDE_NAMES = {"_materials", "stones", "ground"}
+
             if not root_prim.IsValid():
                 print(f"[ERROR] Prim '{prim_path}' not found.")
                 return
 
-            current_class = "crop"
-
-            
             for child in root_prim.GetChildren():
                 name = child.GetName()
-                if name == "_materials" or name == "stones":
-                    continue  
-                elif name.startswith("bed"):
-                    current_class = "maize"
-                elif name == "taraxacum" or name == "polygonum" or name == "portulaca":
-                    current_class = "weed"
-                else:
+
+                if name in EXCLUDE_NAMES:
+                    continue
+
+                if name not in all_labels:
                     print(f"[WARNING] UNKNOWN OBJECT FOUND: {name}")
                     continue
+
+                label = all_labels[name]
 
                 if not child.IsValid():
                     continue
 
-                print(f"[INFO] Labeling bed group: {child.GetPath()}")
+                print(f"[INFO] Labeling group '{name}' with class '{label}': {child.GetPath()}")
 
                 for sub in child.GetChildren():
-                    if sub.IsValid():
-                        
-                        add_update_semantics(sub, current_class)
+                    if sub.IsValid() and child.GetTypeName() == 'Xform':
+                        add_update_semantics(sub, label)
 
 
 
