@@ -6,7 +6,7 @@ from tqdm import tqdm
 import yaml
 
 # --- CONFIG ---
-DATASET_DIR = "coco_dataset2"
+DATASET_DIR = "yolo_dataset"
 SPLIT = "val"  # or "train"
 IMG_FOLDER = os.path.join(DATASET_DIR, "images", SPLIT)
 LABEL_FOLDER = os.path.join(DATASET_DIR, "labels", SPLIT)
