@@ -1,0 +1,715 @@
+[0.160s] DEBUG:colcon:Command line arguments: ['/usr/local/bin/colcon', 'build']
+[0.160s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=False, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=16, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, mixin_files=None, mixin=None, verb_parser=<colcon_mixin.mixin.mixin_argument.MixinArgumentDecorator object at 0x714d3c28c400>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x714d3c24f6a0>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x714d3c24f6a0>>, mixin_verb=('build',))
+[0.325s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.325s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.325s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.325s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.325s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.325s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.326s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/jion_kubo/agriverse/IsaacROS'
+[0.326s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.326s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.326s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.326s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.326s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.326s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.326s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.326s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.326s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk) by extensions ['ignore', 'ignore_ament_install']
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk) by extension 'ignore'
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk) by extension 'ignore_ament_install'
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk) by extensions ['colcon_pkg']
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk) by extension 'colcon_pkg'
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk) by extensions ['colcon_meta']
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk) by extension 'colcon_meta'
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk) by extensions ['ros']
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk) by extension 'ros'
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk) by extensions ['cmake', 'python']
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk) by extension 'cmake'
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk) by extension 'python'
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk) by extensions ['python_setup_py']
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk) by extension 'python_setup_py'
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk/textures) by extensions ['ignore', 'ignore_ament_install']
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk/textures) by extension 'ignore'
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk/textures) by extension 'ignore_ament_install'
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk/textures) by extensions ['colcon_pkg']
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk/textures) by extension 'colcon_pkg'
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk/textures) by extensions ['colcon_meta']
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk/textures) by extension 'colcon_meta'
+[0.335s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk/textures) by extensions ['ros']
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk/textures) by extension 'ros'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk/textures) by extensions ['cmake', 'python']
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk/textures) by extension 'cmake'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk/textures) by extension 'python'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk/textures) by extensions ['python_setup_py']
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(additional_tests_jk/textures) by extension 'python_setup_py'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob) by extensions ['ignore', 'ignore_ament_install']
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob) by extension 'ignore'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob) by extension 'ignore_ament_install'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob) by extensions ['colcon_pkg']
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob) by extension 'colcon_pkg'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob) by extensions ['colcon_meta']
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob) by extension 'colcon_meta'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob) by extensions ['ros']
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob) by extension 'ros'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob) by extensions ['cmake', 'python']
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob) by extension 'cmake'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob) by extension 'python'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob) by extensions ['python_setup_py']
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob) by extension 'python_setup_py'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob/meshes) by extensions ['ignore', 'ignore_ament_install']
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob/meshes) by extension 'ignore'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob/meshes) by extension 'ignore_ament_install'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob/meshes) by extensions ['colcon_pkg']
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob/meshes) by extension 'colcon_pkg'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob/meshes) by extensions ['colcon_meta']
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob/meshes) by extension 'colcon_meta'
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob/meshes) by extensions ['ros']
+[0.336s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob/meshes) by extension 'ros'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob/meshes) by extensions ['cmake', 'python']
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob/meshes) by extension 'cmake'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob/meshes) by extension 'python'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob/meshes) by extensions ['python_setup_py']
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(agrorob/meshes) by extension 'python_setup_py'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags) by extensions ['ignore', 'ignore_ament_install']
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags) by extension 'ignore'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags) by extension 'ignore_ament_install'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags) by extensions ['colcon_pkg']
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags) by extension 'colcon_pkg'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags) by extensions ['colcon_meta']
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags) by extension 'colcon_meta'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags) by extensions ['ros']
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags) by extension 'ros'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags) by extensions ['cmake', 'python']
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags) by extension 'cmake'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags) by extension 'python'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags) by extensions ['python_setup_py']
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags) by extension 'python_setup_py'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag) by extensions ['ignore', 'ignore_ament_install']
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag) by extension 'ignore'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag) by extension 'ignore_ament_install'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag) by extensions ['colcon_pkg']
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag) by extension 'colcon_pkg'
+[0.337s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag) by extensions ['colcon_meta']
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag) by extension 'colcon_meta'
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag) by extensions ['ros']
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag) by extension 'ros'
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag) by extensions ['cmake', 'python']
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag) by extension 'cmake'
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag) by extension 'python'
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag) by extensions ['python_setup_py']
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag) by extension 'python_setup_py'
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90) by extensions ['ignore', 'ignore_ament_install']
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90) by extension 'ignore'
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90) by extension 'ignore_ament_install'
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90) by extensions ['colcon_pkg']
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90) by extension 'colcon_pkg'
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90) by extensions ['colcon_meta']
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90) by extension 'colcon_meta'
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90) by extensions ['ros']
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90) by extension 'ros'
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90) by extensions ['cmake', 'python']
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90) by extension 'cmake'
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90) by extension 'python'
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90) by extensions ['python_setup_py']
+[0.338s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90) by extension 'python_setup_py'
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_2) by extensions ['ignore', 'ignore_ament_install']
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_2) by extension 'ignore'
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_2) by extension 'ignore_ament_install'
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_2) by extensions ['colcon_pkg']
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_2) by extension 'colcon_pkg'
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_2) by extensions ['colcon_meta']
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_2) by extension 'colcon_meta'
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_2) by extensions ['ros']
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_2) by extension 'ros'
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_2) by extensions ['cmake', 'python']
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_2) by extension 'cmake'
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_2) by extension 'python'
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_2) by extensions ['python_setup_py']
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_2) by extension 'python_setup_py'
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_3) by extensions ['ignore', 'ignore_ament_install']
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_3) by extension 'ignore'
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_3) by extension 'ignore_ament_install'
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_3) by extensions ['colcon_pkg']
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_3) by extension 'colcon_pkg'
+[0.339s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_3) by extensions ['colcon_meta']
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_3) by extension 'colcon_meta'
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_3) by extensions ['ros']
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_3) by extension 'ros'
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_3) by extensions ['cmake', 'python']
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_3) by extension 'cmake'
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_3) by extension 'python'
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_3) by extensions ['python_setup_py']
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_3) by extension 'python_setup_py'
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_4) by extensions ['ignore', 'ignore_ament_install']
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_4) by extension 'ignore'
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_4) by extension 'ignore_ament_install'
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_4) by extensions ['colcon_pkg']
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_4) by extension 'colcon_pkg'
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_4) by extensions ['colcon_meta']
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_4) by extension 'colcon_meta'
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_4) by extensions ['ros']
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_4) by extension 'ros'
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_4) by extensions ['cmake', 'python']
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_4) by extension 'cmake'
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_4) by extension 'python'
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_4) by extensions ['python_setup_py']
+[0.340s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_4) by extension 'python_setup_py'
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_5) by extensions ['ignore', 'ignore_ament_install']
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_5) by extension 'ignore'
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_5) by extension 'ignore_ament_install'
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_5) by extensions ['colcon_pkg']
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_5) by extension 'colcon_pkg'
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_5) by extensions ['colcon_meta']
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_5) by extension 'colcon_meta'
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_5) by extensions ['ros']
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_5) by extension 'ros'
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_5) by extensions ['cmake', 'python']
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_5) by extension 'cmake'
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_5) by extension 'python'
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_5) by extensions ['python_setup_py']
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_5) by extension 'python_setup_py'
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_6) by extensions ['ignore', 'ignore_ament_install']
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_6) by extension 'ignore'
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_6) by extension 'ignore_ament_install'
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_6) by extensions ['colcon_pkg']
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_6) by extension 'colcon_pkg'
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_6) by extensions ['colcon_meta']
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_6) by extension 'colcon_meta'
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_6) by extensions ['ros']
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_6) by extension 'ros'
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_6) by extensions ['cmake', 'python']
+[0.341s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_6) by extension 'cmake'
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_6) by extension 'python'
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_6) by extensions ['python_setup_py']
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_6) by extension 'python_setup_py'
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_7) by extensions ['ignore', 'ignore_ament_install']
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_7) by extension 'ignore'
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_7) by extension 'ignore_ament_install'
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_7) by extensions ['colcon_pkg']
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_7) by extension 'colcon_pkg'
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_7) by extensions ['colcon_meta']
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_7) by extension 'colcon_meta'
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_7) by extensions ['ros']
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_7) by extension 'ros'
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_7) by extensions ['cmake', 'python']
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_7) by extension 'cmake'
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_7) by extension 'python'
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_7) by extensions ['python_setup_py']
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_7) by extension 'python_setup_py'
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_8) by extensions ['ignore', 'ignore_ament_install']
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_8) by extension 'ignore'
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_8) by extension 'ignore_ament_install'
+[0.342s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_8) by extensions ['colcon_pkg']
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_8) by extension 'colcon_pkg'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_8) by extensions ['colcon_meta']
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_8) by extension 'colcon_meta'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_8) by extensions ['ros']
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_8) by extension 'ros'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_8) by extensions ['cmake', 'python']
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_8) by extension 'cmake'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_8) by extension 'python'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_8) by extensions ['python_setup_py']
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_8) by extension 'python_setup_py'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_9) by extensions ['ignore', 'ignore_ament_install']
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_9) by extension 'ignore'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_9) by extension 'ignore_ament_install'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_9) by extensions ['colcon_pkg']
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_9) by extension 'colcon_pkg'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_9) by extensions ['colcon_meta']
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_9) by extension 'colcon_meta'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_9) by extensions ['ros']
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_9) by extension 'ros'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_9) by extensions ['cmake', 'python']
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_9) by extension 'cmake'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_9) by extension 'python'
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_9) by extensions ['python_setup_py']
+[0.343s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/30hz_sin_max90_9) by extension 'python_setup_py'
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/agrorob_record) by extensions ['ignore', 'ignore_ament_install']
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/agrorob_record) by extension 'ignore'
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/agrorob_record) by extension 'ignore_ament_install'
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/agrorob_record) by extensions ['colcon_pkg']
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/agrorob_record) by extension 'colcon_pkg'
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/agrorob_record) by extensions ['colcon_meta']
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/agrorob_record) by extension 'colcon_meta'
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/agrorob_record) by extensions ['ros']
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/agrorob_record) by extension 'ros'
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/agrorob_record) by extensions ['cmake', 'python']
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/agrorob_record) by extension 'cmake'
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/agrorob_record) by extension 'python'
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/agrorob_record) by extensions ['python_setup_py']
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/agrorob_record) by extension 'python_setup_py'
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_10) by extensions ['ignore', 'ignore_ament_install']
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_10) by extension 'ignore'
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_10) by extension 'ignore_ament_install'
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_10) by extensions ['colcon_pkg']
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_10) by extension 'colcon_pkg'
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_10) by extensions ['colcon_meta']
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_10) by extension 'colcon_meta'
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_10) by extensions ['ros']
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_10) by extension 'ros'
+[0.344s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_10) by extensions ['cmake', 'python']
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_10) by extension 'cmake'
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_10) by extension 'python'
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_10) by extensions ['python_setup_py']
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_10) by extension 'python_setup_py'
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_11) by extensions ['ignore', 'ignore_ament_install']
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_11) by extension 'ignore'
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_11) by extension 'ignore_ament_install'
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_11) by extensions ['colcon_pkg']
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_11) by extension 'colcon_pkg'
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_11) by extensions ['colcon_meta']
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_11) by extension 'colcon_meta'
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_11) by extensions ['ros']
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_11) by extension 'ros'
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_11) by extensions ['cmake', 'python']
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_11) by extension 'cmake'
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_11) by extension 'python'
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_11) by extensions ['python_setup_py']
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_11) by extension 'python_setup_py'
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_12) by extensions ['ignore', 'ignore_ament_install']
+[0.345s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_12) by extension 'ignore'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_12) by extension 'ignore_ament_install'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_12) by extensions ['colcon_pkg']
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_12) by extension 'colcon_pkg'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_12) by extensions ['colcon_meta']
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_12) by extension 'colcon_meta'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_12) by extensions ['ros']
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_12) by extension 'ros'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_12) by extensions ['cmake', 'python']
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_12) by extension 'cmake'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_12) by extension 'python'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_12) by extensions ['python_setup_py']
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_12) by extension 'python_setup_py'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_13) by extensions ['ignore', 'ignore_ament_install']
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_13) by extension 'ignore'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_13) by extension 'ignore_ament_install'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_13) by extensions ['colcon_pkg']
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_13) by extension 'colcon_pkg'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_13) by extensions ['colcon_meta']
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_13) by extension 'colcon_meta'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_13) by extensions ['ros']
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_13) by extension 'ros'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_13) by extensions ['cmake', 'python']
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_13) by extension 'cmake'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_13) by extension 'python'
+[0.346s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_13) by extensions ['python_setup_py']
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_13) by extension 'python_setup_py'
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_14) by extensions ['ignore', 'ignore_ament_install']
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_14) by extension 'ignore'
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_14) by extension 'ignore_ament_install'
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_14) by extensions ['colcon_pkg']
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_14) by extension 'colcon_pkg'
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_14) by extensions ['colcon_meta']
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_14) by extension 'colcon_meta'
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_14) by extensions ['ros']
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_14) by extension 'ros'
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_14) by extensions ['cmake', 'python']
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_14) by extension 'cmake'
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_14) by extension 'python'
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_14) by extensions ['python_setup_py']
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_14) by extension 'python_setup_py'
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_15) by extensions ['ignore', 'ignore_ament_install']
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_15) by extension 'ignore'
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_15) by extension 'ignore_ament_install'
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_15) by extensions ['colcon_pkg']
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_15) by extension 'colcon_pkg'
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_15) by extensions ['colcon_meta']
+[0.347s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_15) by extension 'colcon_meta'
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_15) by extensions ['ros']
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_15) by extension 'ros'
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_15) by extensions ['cmake', 'python']
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_15) by extension 'cmake'
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_15) by extension 'python'
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_15) by extensions ['python_setup_py']
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_15) by extension 'python_setup_py'
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_16) by extensions ['ignore', 'ignore_ament_install']
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_16) by extension 'ignore'
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_16) by extension 'ignore_ament_install'
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_16) by extensions ['colcon_pkg']
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_16) by extension 'colcon_pkg'
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_16) by extensions ['colcon_meta']
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_16) by extension 'colcon_meta'
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_16) by extensions ['ros']
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_16) by extension 'ros'
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_16) by extensions ['cmake', 'python']
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_16) by extension 'cmake'
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_16) by extension 'python'
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_16) by extensions ['python_setup_py']
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_16) by extension 'python_setup_py'
+[0.348s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_17) by extensions ['ignore', 'ignore_ament_install']
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_17) by extension 'ignore'
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_17) by extension 'ignore_ament_install'
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_17) by extensions ['colcon_pkg']
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_17) by extension 'colcon_pkg'
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_17) by extensions ['colcon_meta']
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_17) by extension 'colcon_meta'
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_17) by extensions ['ros']
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_17) by extension 'ros'
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_17) by extensions ['cmake', 'python']
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_17) by extension 'cmake'
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_17) by extension 'python'
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_17) by extensions ['python_setup_py']
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_17) by extension 'python_setup_py'
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_18) by extensions ['ignore', 'ignore_ament_install']
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_18) by extension 'ignore'
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_18) by extension 'ignore_ament_install'
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_18) by extensions ['colcon_pkg']
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_18) by extension 'colcon_pkg'
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_18) by extensions ['colcon_meta']
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_18) by extension 'colcon_meta'
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_18) by extensions ['ros']
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_18) by extension 'ros'
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_18) by extensions ['cmake', 'python']
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_18) by extension 'cmake'
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_18) by extension 'python'
+[0.349s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_18) by extensions ['python_setup_py']
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_18) by extension 'python_setup_py'
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_19) by extensions ['ignore', 'ignore_ament_install']
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_19) by extension 'ignore'
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_19) by extension 'ignore_ament_install'
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_19) by extensions ['colcon_pkg']
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_19) by extension 'colcon_pkg'
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_19) by extensions ['colcon_meta']
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_19) by extension 'colcon_meta'
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_19) by extensions ['ros']
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_19) by extension 'ros'
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_19) by extensions ['cmake', 'python']
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_19) by extension 'cmake'
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_19) by extension 'python'
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_19) by extensions ['python_setup_py']
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_19) by extension 'python_setup_py'
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_20) by extensions ['ignore', 'ignore_ament_install']
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_20) by extension 'ignore'
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_20) by extension 'ignore_ament_install'
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_20) by extensions ['colcon_pkg']
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_20) by extension 'colcon_pkg'
+[0.350s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_20) by extensions ['colcon_meta']
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_20) by extension 'colcon_meta'
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_20) by extensions ['ros']
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_20) by extension 'ros'
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_20) by extensions ['cmake', 'python']
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_20) by extension 'cmake'
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_20) by extension 'python'
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_20) by extensions ['python_setup_py']
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_20) by extension 'python_setup_py'
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_21) by extensions ['ignore', 'ignore_ament_install']
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_21) by extension 'ignore'
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_21) by extension 'ignore_ament_install'
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_21) by extensions ['colcon_pkg']
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_21) by extension 'colcon_pkg'
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_21) by extensions ['colcon_meta']
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_21) by extension 'colcon_meta'
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_21) by extensions ['ros']
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_21) by extension 'ros'
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_21) by extensions ['cmake', 'python']
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_21) by extension 'cmake'
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_21) by extension 'python'
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_21) by extensions ['python_setup_py']
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_21) by extension 'python_setup_py'
+[0.351s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_22) by extensions ['ignore', 'ignore_ament_install']
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_22) by extension 'ignore'
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_22) by extension 'ignore_ament_install'
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_22) by extensions ['colcon_pkg']
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_22) by extension 'colcon_pkg'
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_22) by extensions ['colcon_meta']
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_22) by extension 'colcon_meta'
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_22) by extensions ['ros']
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_22) by extension 'ros'
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_22) by extensions ['cmake', 'python']
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_22) by extension 'cmake'
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_22) by extension 'python'
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_22) by extensions ['python_setup_py']
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(bags/steering_bag/rec_22) by extension 'python_setup_py'
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test) by extensions ['ignore', 'ignore_ament_install']
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test) by extension 'ignore'
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test) by extension 'ignore_ament_install'
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test) by extensions ['colcon_pkg']
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test) by extension 'colcon_pkg'
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test) by extensions ['colcon_meta']
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test) by extension 'colcon_meta'
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test) by extensions ['ros']
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test) by extension 'ros'
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test) by extensions ['cmake', 'python']
+[0.352s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test) by extension 'cmake'
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test) by extension 'python'
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test) by extensions ['python_setup_py']
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test) by extension 'python_setup_py'
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test/textures) by extensions ['ignore', 'ignore_ament_install']
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test/textures) by extension 'ignore'
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test/textures) by extension 'ignore_ament_install'
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test/textures) by extensions ['colcon_pkg']
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test/textures) by extension 'colcon_pkg'
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test/textures) by extensions ['colcon_meta']
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test/textures) by extension 'colcon_meta'
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test/textures) by extensions ['ros']
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test/textures) by extension 'ros'
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test/textures) by extensions ['cmake', 'python']
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test/textures) by extension 'cmake'
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test/textures) by extension 'python'
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test/textures) by extensions ['python_setup_py']
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(crops_test/textures) by extension 'python_setup_py'
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(frontend) by extensions ['ignore', 'ignore_ament_install']
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(frontend) by extension 'ignore'
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(frontend) by extension 'ignore_ament_install'
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(frontend) by extensions ['colcon_pkg']
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(frontend) by extension 'colcon_pkg'
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(frontend) by extensions ['colcon_meta']
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(frontend) by extension 'colcon_meta'
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(frontend) by extensions ['ros']
+[0.353s] Level 1:colcon.colcon_core.package_identification:_identify(frontend) by extension 'ros'
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend) by extensions ['cmake', 'python']
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend) by extension 'cmake'
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend) by extension 'python'
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend) by extensions ['python_setup_py']
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend) by extension 'python_setup_py'
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/__pycache__) by extensions ['ignore', 'ignore_ament_install']
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/__pycache__) by extension 'ignore'
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/__pycache__) by extension 'ignore_ament_install'
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/__pycache__) by extensions ['colcon_pkg']
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/__pycache__) by extension 'colcon_pkg'
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/__pycache__) by extensions ['colcon_meta']
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/__pycache__) by extension 'colcon_meta'
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/__pycache__) by extensions ['ros']
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/__pycache__) by extension 'ros'
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/__pycache__) by extensions ['cmake', 'python']
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/__pycache__) by extension 'cmake'
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/__pycache__) by extension 'python'
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/__pycache__) by extensions ['python_setup_py']
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/__pycache__) by extension 'python_setup_py'
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/useless) by extensions ['ignore', 'ignore_ament_install']
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/useless) by extension 'ignore'
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/useless) by extension 'ignore_ament_install'
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/useless) by extensions ['colcon_pkg']
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/useless) by extension 'colcon_pkg'
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/useless) by extensions ['colcon_meta']
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/useless) by extension 'colcon_meta'
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/useless) by extensions ['ros']
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/useless) by extension 'ros'
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/useless) by extensions ['cmake', 'python']
+[0.354s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/useless) by extension 'cmake'
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/useless) by extension 'python'
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/useless) by extensions ['python_setup_py']
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(frontend/useless) by extension 'python_setup_py'
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(simulation) by extensions ['ignore', 'ignore_ament_install']
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(simulation) by extension 'ignore'
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(simulation) by extension 'ignore_ament_install'
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(simulation) by extensions ['colcon_pkg']
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(simulation) by extension 'colcon_pkg'
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(simulation) by extensions ['colcon_meta']
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(simulation) by extension 'colcon_meta'
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(simulation) by extensions ['ros']
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(simulation) by extension 'ros'
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(simulation) by extensions ['cmake', 'python']
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(simulation) by extension 'cmake'
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(simulation) by extension 'python'
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(simulation) by extensions ['python_setup_py']
+[0.355s] Level 1:colcon.colcon_core.package_identification:_identify(simulation) by extension 'python_setup_py'
+[0.356s] Level 1:colcon.colcon_core.package_identification:_identify(simulation/build) by extensions ['ignore', 'ignore_ament_install']
+[0.356s] Level 1:colcon.colcon_core.package_identification:_identify(simulation/build) by extension 'ignore'
+[0.356s] Level 1:colcon.colcon_core.package_identification:_identify(simulation/build) ignored
+[0.356s] Level 1:colcon.colcon_core.package_identification:_identify(simulation/install) by extensions ['ignore', 'ignore_ament_install']
+[0.356s] Level 1:colcon.colcon_core.package_identification:_identify(simulation/install) by extension 'ignore'
+[0.356s] Level 1:colcon.colcon_core.package_identification:_identify(simulation/install) ignored
+[0.356s] Level 1:colcon.colcon_core.package_identification:_identify(simulation/log) by extensions ['ignore', 'ignore_ament_install']
+[0.356s] Level 1:colcon.colcon_core.package_identification:_identify(simulation/log) by extension 'ignore'
+[0.356s] Level 1:colcon.colcon_core.package_identification:_identify(simulation/log) ignored
+[0.356s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[0.356s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[0.356s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[0.356s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[0.356s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[0.356s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[0.356s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[0.356s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[0.356s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extensions ['ignore', 'ignore_ament_install']
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extension 'ignore'
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extension 'ignore_ament_install'
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extensions ['colcon_pkg']
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extension 'colcon_pkg'
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extensions ['colcon_meta']
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extension 'colcon_meta'
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extensions ['ros']
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extension 'ros'
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extensions ['cmake', 'python']
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extension 'cmake'
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extension 'python'
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extensions ['python_setup_py']
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools) by extension 'python_setup_py'
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools/do_not_use_obsolete) by extensions ['ignore', 'ignore_ament_install']
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools/do_not_use_obsolete) by extension 'ignore'
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools/do_not_use_obsolete) by extension 'ignore_ament_install'
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools/do_not_use_obsolete) by extensions ['colcon_pkg']
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools/do_not_use_obsolete) by extension 'colcon_pkg'
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools/do_not_use_obsolete) by extensions ['colcon_meta']
+[0.357s] Level 1:colcon.colcon_core.package_identification:_identify(tools/do_not_use_obsolete) by extension 'colcon_meta'
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/do_not_use_obsolete) by extensions ['ros']
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/do_not_use_obsolete) by extension 'ros'
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/do_not_use_obsolete) by extensions ['cmake', 'python']
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/do_not_use_obsolete) by extension 'cmake'
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/do_not_use_obsolete) by extension 'python'
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/do_not_use_obsolete) by extensions ['python_setup_py']
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/do_not_use_obsolete) by extension 'python_setup_py'
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/sample_dummy_data_set_generation_curved) by extensions ['ignore', 'ignore_ament_install']
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/sample_dummy_data_set_generation_curved) by extension 'ignore'
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/sample_dummy_data_set_generation_curved) by extension 'ignore_ament_install'
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/sample_dummy_data_set_generation_curved) by extensions ['colcon_pkg']
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/sample_dummy_data_set_generation_curved) by extension 'colcon_pkg'
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/sample_dummy_data_set_generation_curved) by extensions ['colcon_meta']
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/sample_dummy_data_set_generation_curved) by extension 'colcon_meta'
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/sample_dummy_data_set_generation_curved) by extensions ['ros']
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/sample_dummy_data_set_generation_curved) by extension 'ros'
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/sample_dummy_data_set_generation_curved) by extensions ['cmake', 'python']
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/sample_dummy_data_set_generation_curved) by extension 'cmake'
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/sample_dummy_data_set_generation_curved) by extension 'python'
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/sample_dummy_data_set_generation_curved) by extensions ['python_setup_py']
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/sample_dummy_data_set_generation_curved) by extension 'python_setup_py'
+[0.358s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step1_ros2bag_extractor) by extensions ['ignore', 'ignore_ament_install']
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step1_ros2bag_extractor) by extension 'ignore'
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step1_ros2bag_extractor) by extension 'ignore_ament_install'
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step1_ros2bag_extractor) by extensions ['colcon_pkg']
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step1_ros2bag_extractor) by extension 'colcon_pkg'
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step1_ros2bag_extractor) by extensions ['colcon_meta']
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step1_ros2bag_extractor) by extension 'colcon_meta'
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step1_ros2bag_extractor) by extensions ['ros']
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step1_ros2bag_extractor) by extension 'ros'
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step1_ros2bag_extractor) by extensions ['cmake', 'python']
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step1_ros2bag_extractor) by extension 'cmake'
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step1_ros2bag_extractor) by extension 'python'
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step1_ros2bag_extractor) by extensions ['python_setup_py']
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step1_ros2bag_extractor) by extension 'python_setup_py'
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial) by extensions ['ignore', 'ignore_ament_install']
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial) by extension 'ignore'
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial) by extension 'ignore_ament_install'
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial) by extensions ['colcon_pkg']
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial) by extension 'colcon_pkg'
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial) by extensions ['colcon_meta']
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial) by extension 'colcon_meta'
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial) by extensions ['ros']
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial) by extension 'ros'
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial) by extensions ['cmake', 'python']
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial) by extension 'cmake'
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial) by extension 'python'
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial) by extensions ['python_setup_py']
+[0.359s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial) by extension 'python_setup_py'
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial/obsolete) by extensions ['ignore', 'ignore_ament_install']
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial/obsolete) by extension 'ignore'
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial/obsolete) by extension 'ignore_ament_install'
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial/obsolete) by extensions ['colcon_pkg']
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial/obsolete) by extension 'colcon_pkg'
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial/obsolete) by extensions ['colcon_meta']
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial/obsolete) by extension 'colcon_meta'
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial/obsolete) by extensions ['ros']
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial/obsolete) by extension 'ros'
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial/obsolete) by extensions ['cmake', 'python']
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial/obsolete) by extension 'cmake'
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial/obsolete) by extension 'python'
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial/obsolete) by extensions ['python_setup_py']
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step2_fit_polynomial/obsolete) by extension 'python_setup_py'
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step3_plot_step_response) by extensions ['ignore', 'ignore_ament_install']
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step3_plot_step_response) by extension 'ignore'
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step3_plot_step_response) by extension 'ignore_ament_install'
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step3_plot_step_response) by extensions ['colcon_pkg']
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step3_plot_step_response) by extension 'colcon_pkg'
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step3_plot_step_response) by extensions ['colcon_meta']
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step3_plot_step_response) by extension 'colcon_meta'
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step3_plot_step_response) by extensions ['ros']
+[0.360s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step3_plot_step_response) by extension 'ros'
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step3_plot_step_response) by extensions ['cmake', 'python']
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step3_plot_step_response) by extension 'cmake'
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step3_plot_step_response) by extension 'python'
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step3_plot_step_response) by extensions ['python_setup_py']
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step3_plot_step_response) by extension 'python_setup_py'
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step4_calculate_steering_rate.py) by extensions ['ignore', 'ignore_ament_install']
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step4_calculate_steering_rate.py) by extension 'ignore'
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step4_calculate_steering_rate.py) by extension 'ignore_ament_install'
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step4_calculate_steering_rate.py) by extensions ['colcon_pkg']
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step4_calculate_steering_rate.py) by extension 'colcon_pkg'
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step4_calculate_steering_rate.py) by extensions ['colcon_meta']
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step4_calculate_steering_rate.py) by extension 'colcon_meta'
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step4_calculate_steering_rate.py) by extensions ['ros']
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step4_calculate_steering_rate.py) by extension 'ros'
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step4_calculate_steering_rate.py) by extensions ['cmake', 'python']
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step4_calculate_steering_rate.py) by extension 'cmake'
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step4_calculate_steering_rate.py) by extension 'python'
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step4_calculate_steering_rate.py) by extensions ['python_setup_py']
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(tools/step4_calculate_steering_rate.py) by extension 'python_setup_py'
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model) by extensions ['ignore', 'ignore_ament_install']
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model) by extension 'ignore'
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model) by extension 'ignore_ament_install'
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model) by extensions ['colcon_pkg']
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model) by extension 'colcon_pkg'
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model) by extensions ['colcon_meta']
+[0.361s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model) by extension 'colcon_meta'
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model) by extensions ['ros']
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model) by extension 'ros'
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model) by extensions ['cmake', 'python']
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model) by extension 'cmake'
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model) by extension 'python'
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model) by extensions ['python_setup_py']
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model) by extension 'python_setup_py'
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model/__pycache__) by extensions ['ignore', 'ignore_ament_install']
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model/__pycache__) by extension 'ignore'
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model/__pycache__) by extension 'ignore_ament_install'
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model/__pycache__) by extensions ['colcon_pkg']
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model/__pycache__) by extension 'colcon_pkg'
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model/__pycache__) by extensions ['colcon_meta']
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model/__pycache__) by extension 'colcon_meta'
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model/__pycache__) by extensions ['ros']
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model/__pycache__) by extension 'ros'
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model/__pycache__) by extensions ['cmake', 'python']
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model/__pycache__) by extension 'cmake'
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model/__pycache__) by extension 'python'
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model/__pycache__) by extensions ['python_setup_py']
+[0.362s] Level 1:colcon.colcon_core.package_identification:_identify(wheel_model/__pycache__) by extension 'python_setup_py'
+[0.362s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.362s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.362s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.362s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.362s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.381s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[0.381s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[0.384s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 273 installed packages in /opt/ros/humble
+[0.385s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[0.419s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.420s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.420s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[0.420s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[0.420s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[0.420s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[0.425s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[0.425s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[0.425s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[0.437s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[0.440s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.440s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/jion_kubo/agriverse/IsaacROS/install/local_setup.ps1'
+[0.441s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/jion_kubo/agriverse/IsaacROS/install/_local_setup_util_ps1.py'
+[0.443s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/jion_kubo/agriverse/IsaacROS/install/setup.ps1'
+[0.444s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/jion_kubo/agriverse/IsaacROS/install/local_setup.sh'
+[0.445s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/jion_kubo/agriverse/IsaacROS/install/_local_setup_util_sh.py'
+[0.445s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/jion_kubo/agriverse/IsaacROS/install/setup.sh'
+[0.446s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/jion_kubo/agriverse/IsaacROS/install/local_setup.bash'
+[0.447s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/jion_kubo/agriverse/IsaacROS/install/setup.bash'
+[0.448s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/jion_kubo/agriverse/IsaacROS/install/local_setup.zsh'
+[0.449s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/jion_kubo/agriverse/IsaacROS/install/setup.zsh'

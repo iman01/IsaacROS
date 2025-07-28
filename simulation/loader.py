@@ -241,79 +241,78 @@ class URDFLoaderApp:
         self.world.reset()
 
     def run(self):
-        rclpy.init()
-        node = JointStateListener()
-        ros_thread = threading.Thread(target=ros_spin, args=(node,), daemon=True)
-        ros_thread.start()
+            rclpy.init()
+            node = JointStateListener()
+            ros_thread = threading.Thread(target=ros_spin, args=(node,), daemon=True)
+            ros_thread.start()
 
-        self.setup_scene()
+            self.setup_scene()
 
-        # WHEELS
-        wheel_joints = {
-            "FL": "/agrorob_visualization/joints/shin_wheel_FL",
-            "FR": "/agrorob_visualization/joints/shin_wheel_FR",
-            "RL": "/agrorob_visualization/joints/shin_wheel_RL",
-            "RR": "/agrorob_visualization/joints/shin_wheel_RR",
-        }
-        stage = omni.usd.get_context().get_stage()
-        drive_apis = {}
-        for key, path in wheel_joints.items():
-            joint_prim = stage.GetPrimAtPath(path)
-            if joint_prim:
-                drive_apis[key] = UsdPhysics.DriveAPI.Get(joint_prim, "angular")
+            # Wheel joints
+            wheel_joints = {
+                "FL": "/agrorob_visualization/joints/shin_wheel_FL",
+                "FR": "/agrorob_visualization/joints/shin_wheel_FR",
+                "RL": "/agrorob_visualization/joints/shin_wheel_RL",
+                "RR": "/agrorob_visualization/joints/shin_wheel_RR",
+            }
+            stage = omni.usd.get_context().get_stage()
+            drive_apis = {
+                k: UsdPhysics.DriveAPI.Get(stage.GetPrimAtPath(v), "angular")
+                for k, v in wheel_joints.items()
+                if stage.GetPrimAtPath(v).IsValid()
+            }
 
-        for key in ["FR", "RR", "FL", "RL"]:
-            if key not in drive_apis:
-                print(f"Warning: Drive API for {key} not found.")
-                continue
-            drive_apis[key].GetDampingAttr().Set(6000.0)
-            drive_apis[key].GetStiffnessAttr().Set(0.0)
+            for key in drive_apis:
+                drive_apis[key].GetDampingAttr().Set(6000.0)
+                drive_apis[key].GetStiffnessAttr().Set(0.0)
 
-        # ROTATION JOINTS
-        body_shin_joints = {
-            "FL": "/agrorob_visualization/joints/body_shin_FL",
-            "FR": "/agrorob_visualization/joints/body_shin_FR",
-            "RL": "/agrorob_visualization/joints/body_shin_RL",
-            "RR": "/agrorob_visualization/joints/body_shin_RR",
-        }
-        body_shin_drive_apis = {}
-        for key, path in body_shin_joints.items():
-            joint_prim = stage.GetPrimAtPath(path)
-            if joint_prim:
-                body_shin_drive_apis[key] = UsdPhysics.DriveAPI.Get(
-                    joint_prim, "angular"
-                )
-        for key in ["FR", "RR", "FL", "RL"]:
-            if key not in body_shin_drive_apis:
-                print(f"Warning: Body_shin Drive API for {key} not found.")
-                continue
-            body_shin_drive_apis[key].GetDampingAttr().Set(100.0)
-            body_shin_drive_apis[key].GetStiffnessAttr().Set(200.0)
+            # Steering joints
+            body_shin_joints = {
+                "FL": "/agrorob_visualization/joints/body_shin_FL",
+                "FR": "/agrorob_visualization/joints/body_shin_FR",
+                "RL": "/agrorob_visualization/joints/body_shin_RL",
+                "RR": "/agrorob_visualization/joints/body_shin_RR",
+            }
+            body_shin_drive_apis = {
+                k: UsdPhysics.DriveAPI.Get(stage.GetPrimAtPath(v), "angular")
+                for k, v in body_shin_joints.items()
+                if stage.GetPrimAtPath(v).IsValid()
+            }
 
-        try:
-            # Main simulation loop
-            while simulation_app.is_running():
+            for key in body_shin_drive_apis:
+                body_shin_drive_apis[key].GetDampingAttr().Set(100.0)
+                body_shin_drive_apis[key].GetStiffnessAttr().Set(200.0)
 
-                velocity = node.speed * 400
+            try:
+                while simulation_app.is_running():
+                    velocity = node.speed * 400
 
-                for key in ["FR", "RR", "FL", "RL"]:
-                    drive_apis[key].GetTargetVelocityAttr().Set(
-                        velocity if key in ["FR", "RR"] else -velocity
-                    )
-                    body_shin_drive_apis[key].GetTargetPositionAttr().Set(
-                        -node.front * 180 / 3.14
-                        if key in ["FR", "FL"]
-                        else -node.back * 180 / 3.14
-                    )
+                    # Drive direction
+                    for key in drive_apis:
+                        drive_apis[key].GetTargetVelocityAttr().Set(
+                            velocity if key in ["FR", "RR"] else -velocity
+                        )
 
-                self.world.step(render=True)
-                simulation_app.update()
-        except KeyboardInterrupt:
-            print("Simulation interrupted by user.")
+                    # Steering angles (degrees)
+                    steer_angles = {
+                        "FL": -node.fl * 180 / 3.14,
+                        "FR": -node.fr * 180 / 3.14,
+                        "RL": -node.rl * 180 / 3.14,
+                        "RR": -node.rr * 180 / 3.14,
+                    }
 
-        simulation_app.close()
-        node.destroy_node()
-        rclpy.shutdown()
+                    for key in body_shin_drive_apis:
+                        body_shin_drive_apis[key].GetTargetPositionAttr().Set(steer_angles[key])
+
+                    self.world.step(render=True)
+                    simulation_app.update()
+
+            except KeyboardInterrupt:
+                print("Simulation interrupted.")
+
+            simulation_app.close()
+            node.destroy_node()
+            rclpy.shutdown()
 
 
 class JointStateListener(Node):
@@ -322,17 +321,24 @@ class JointStateListener(Node):
         self.subscription = self.create_subscription(
             JointState, "/joint_states", self.listener_callback, 10
         )
-        self.subscription  # prevent unused variable warning
 
-        self.speed = 0
-        self.front = 0
-        self.back = 0
+        # Default values for steering and speed
+        self.speed = 0.0
+        self.fl = 0.0  # front left
+        self.fr = 0.0  # front right
+        self.rl = 0.0  # rear left
+        self.rr = 0.0  # rear right
 
     def listener_callback(self, msg):
         joint_positions = dict(zip(msg.name, msg.position))
-        self.front = joint_positions.get("front", 0)
-        self.back = joint_positions.get("back", 0)
-        self.speed = joint_positions.get("speed", 0)
+        self.speed = joint_positions.get("speed", 0.0)
+
+        # Support full 4-wheel steering if provided
+        self.fl = joint_positions.get("front_left", joint_positions.get("front", 0.0))
+        self.fr = joint_positions.get("front_right", joint_positions.get("front", 0.0))
+        self.rl = joint_positions.get("rear_left", joint_positions.get("back", 0.0))
+        self.rr = joint_positions.get("rear_right", joint_positions.get("back", 0.0))
+
 
 
 if __name__ == "__main__":
