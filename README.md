@@ -1,98 +1,171 @@
-# Isaac ROS
+# Isaac ROS — Steering Dynamics Extension (Jion's Branch)
 
 ## Overview
 
-This repository provides a simulation environment for the Agrorob robot using Isaac Lab, with seamless integration to ROS 2 Humble. The robot can be controlled via a dedicated frontend application, which also allows users to view live camera feeds from the robot.
+This branch expands the base IsaacROS project with tools to **record**, **analyse**, and **simulate** the steering behaviour of the Agrorob robot. It includes:
 
-This project is built to work with Isaac Lab and ROS 2 Humble. Please follow the steps below to set up your environment.
+- Real robot and simulation analysis pipelines
+- Polynomial fitting of steering responses
+- Steering emulator with four modes: `car`, `4ws`, `crab`, `pivot`
+- Scripts for generating ROS 2 bags via sinusoidal and step steering input
+
+Compatible with: **Isaac Lab**, **ROS 2 Humble**, and the `env_isaaclab` Conda environment.
+
+---
+
+## New Features
+
+- 🚜 Realistic steering dynamics emulation based on real robot data
+- 🔄 Polynomial fitting of `/cmd_vel` → steering angle
+- 🧪 Real + simulation response plotting tools
+- 🧠 Four steering modes: `car`, `4ws`, `crab`, `pivot`
+- 📦 Bag file extraction scripts with timestamped CSVs
 
 ---
 
 ## Installation Steps
 
-### 1. Install Isaac Lab
-To get started, you need to install Isaac Lab. Follow the official installation guide provided by NVIDIA:  
-[Isaac Lab Installation Guide](https://developer.nvidia.com/isaac-sim)
+Follow the same steps as the main branch:
 
-### 2. Install ROS 2 Humble Distribution
-Once Isaac Lab is installed, proceed to install the ROS 2 Humble distribution. You can find the installation instructions here:  
-[ROS 2 Humble Installation Guide](https://docs.ros.org/en/humble/Installation.html)
+1. **Install Isaac Lab**  
+   [Isaac Lab Installation Guide](https://developer.nvidia.com/isaac-sim)
 
-### 3. Install controller dependencies
-Once finished install the dependencies for the controller using
+2. **Install ROS 2 Humble**  
+   [ROS 2 Humble Installation Guide](https://docs.ros.org/en/humble/Installation.html)
+
+3. **Install Python dependencies**
 
 ```bash
-bash pip install -r requirements.txt
+# Inside your conda environment
+pip install -r requirements.txt
 ```
 
-Or if conda is being used
-
+Or with conda:
 ```bash
 conda install --file requirements.txt
 ```
 
-Those dependencies can be either installed in `env_isaaclab` for ease of use or seperate enviroment
+---
 
+## Real Robot Pipeline
 
+### 1. Extract from ROS 2 bag
+```bash
+conda activate isaaclab
+cd ~/agrorob_ws
+. install/setup.bash
+cd ~/agriverse/IsaacROS/tools/step1_ros2bag_extractor
+chmod +x bag2csv_steering.py
+./bag2csv_steering.py rec_22_0.db3
+```
 
-<!-- ---
+### 2. Fit polynomial (input vs output)
+```bash
+cd ../step2_fit_polynomial
+python3 plot_fit_polynomial.py cmd_vel.csv robot_state.csv
+```
 
-## Usage
-After completing the installations, you can start using this repository by cloning it and following the provided scripts or documentation. -->
+### 3. Plot step response (input/output vs time)
+```bash
+cd ../step3_plot_step_response
+python3 plot_step_response.py cmd_vel.csv robot_state.csv
+```
+
+### 4. Calculate steering rate
+```bash
+cd ../step4_calculate_steering_rate.py
+python3 calc_steering_rate.py cmd_vel.csv robot_state.csv
+```
 
 ---
 
-## Running the programs
+## Simulation Robot Pipeline
 
+### 1. Extract from simulation ROS 2 bag
+```bash
+cd ~/agriverse/IsaacROS/tools/step_sim1_ros2bag_extractor
+chmod +x bag2csv_steering_sim.py
+./bag2csv_steering_sim.py your_bag.db3
+```
 
-If everything was installed as deafult you can also run `./run.sh` to run both the controller and the simulation.
+### 2. Fit polynomial
+```bash
+cd ../step_sim2_fit_polynomial
+python3 plot_fit_polynomial.py cmd_vel.csv robot_state.csv
+```
 
-### Simulation
-1. Navigate to your Isaac environment.
-    ```bash
-    conda activate env_isaaclab
-    ```
-2. Source the ROS environment.
-    ```bash
-    source opt/ros/humbe/setup.sh
-    ```
-3. Run `simulation/loader.py`: 
-    ```bash
-    python loader.py
-    ```   
-Or run the `./run_isaac.sh` if everything is installed as instructed by installation steps 
-### Controler
-1. Run the enviroemnt
-    ```bash
-    conda activate env_isaaclab
-    ```
+### 3. Plot step response
+```bash
+cd ../step_sim3_plot_step_response
+python3 plot_step_response.py cmd_vel.csv robot_state.csv
+```
 
-    If the dependencies were installed in the isaaclab enviroment or activate your enviroment containing them 
+### 4. Calculate steering rate
+```bash
+cd ../step_sim4_calculate_steering_rate
+python3 calc_steering_rate.py cmd_vel.csv robot_state.csv
+```
 
-2. Source the ROS environment.
-    ```bash
-    source opt/ros/humbe/setup.sh
-    ```
-3. Run `contoller.py`: 
-    ```bash
-    python frontend/main.py
-    ```  
-Or run the `./run_fronted.sh` if everything was installed as deafult
+---
 
+## Simulation (Isaac Sim)
 
-## Features
-1. The proportions of the robot and the placement of the three cameras are accurate to the real robot.
-2. Two steering modes are available: Normal and Crab.
-3. The frontend application show a live preview of the set direction of the wheels.
-4. Gamepads are supported as an input device for the controller.
-5. Analogue speed input dependent on the average of two gamepad trigger values.
+### 1. Run the loader with modified logic
+```bash
+conda activate env_isaaclab
+source /opt/ros/humble/setup.bash
+cd simulation
+python3 loader.py
+```
 
+This version reads `/joint_states` and applies:
+- Target velocities
+- Independent front/rear steering angles
 
-## Support
-For any issues or questions, feel free to open an issue in this repository or consult the official documentation for Isaac Lab and ROS 2.
+---
+
+## Steering Input Scripts
+
+All scripts below publish `/cmd_vel` to drive the steering emulator or simulation.
+
+### 🔄 Sinusoidal (no motion)
+```bash
+cd simulation
+python3 sinusoid_steering.py
+```
+
+### 🚙 Sinusoidal (with forward motion)
+```bash
+python3 sinusoid_steering_with_forward_motion.py
+```
+
+### ↕ Step sequence
+```bash
+python3 step_steering.py --inc_deg 10 --max_deg 90
+```
+
+---
+
+## Steering Emulator (in real robot environment)
+
+### With selectable steering modes:
+```bash
+python3 steering_emulator_with_modes.py --ros-args -p steering_mode:=car
+```
+
+Modes: `car`, `4ws`, `crab`, `pivot`  
+This node listens to `/cmd_vel`, applies per-wheel dynamics, and publishes `/joint_states`.
+
+---
+
+## Notes
+
+- JSON files in `simulation/steering_params/` and `tools/` contain saved steering profiles and fitted models.
+- The loader is modified from the original to support 4-wheel steering and independent dynamics.
+- See `loader.py` for changes from the original implementation.
 
 ---
 
 ## License
-This project is licensed under the Apache License 2.0. See the [LICENSE](./LICENSE) file for details.
 
+Apache License 2.0. See the [LICENSE](./LICENSE) file for details.
