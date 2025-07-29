@@ -3,3 +3,4 @@
 _out_sdrec/
 __pycache__/
 datasets/
+*.blend
