@@ -1,7 +1,7 @@
 output:
   blender:
     type: blender_file
-    filename: test1.blend
+    filename: crops.blend
 
 field:
   shift_next_bed: false
