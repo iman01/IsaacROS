@@ -30,7 +30,6 @@ class Game:
         self.font = pygame.font.SysFont(None, 36)
 
         self.square_rect = pygame.Rect(50, 80, 40, 40)
-        self.crab = False
 
         if pygame.joystick.get_count() > 0:
             self.joystick = pygame.joystick.Joystick(0)
@@ -45,7 +44,7 @@ class Game:
 
         self.front_rot = 0.0
         self.back_rot = 0.0
-        self.speed = 0.5
+        self.speed = 0.0
 
 
         self.bridge = CvBridge()
@@ -61,8 +60,6 @@ class Game:
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.JOYBUTTONDOWN:
-                    if event.button == 0:  # Replace 0 with your button index
-                        self.crab = not self.crab
                     if event.button == 1:  # Replace 0 with your button index
                         pygame.quit()
                         sys.exit()
@@ -84,13 +81,6 @@ class Game:
     def draw(self):
         pygame.draw.rect(self.screen, (255, 255, 255), pygame.Rect(0, 0, 330, 330))
 
-
-        text = "Crab" if self.crab else "Normal"
-        drive_label = self.font.render(f"Drive mode: {text}", True, (0,0,0))
-        drive_rect = drive_label.get_rect()
-        drive_rect.centerx = 150
-        drive_rect.y = 0 + 10  
-        self.screen.blit(drive_label, drive_rect)
 
         speed_label = self.font.render(f"Speed: {self.speed:.2f}", True, (0,0,0))
         speed_rect = speed_label.get_rect()
@@ -123,7 +113,7 @@ class Game:
             right_x = x_base + head_width * sin(angle) / 2
             right_y = y_base  - head_width * cos(angle) / 2
 
-            color = (80, 20, 20) if self.crab else (20, 80, 20)
+            color = (20, 80, 20)
             pygame.draw.line(self.screen, color, (x_tail, y_tail), (x_base, y_base), 3)
             pygame.draw.polygon(self.screen, color, [(x_head, y_head), (left_x, left_y), (right_x, right_y)])
 
@@ -178,21 +168,11 @@ class Game:
 
 
     def handle_gamepad_input(self):
-        if self.crab:
-            deadzone = 0.3
-            x = self.joystick.get_axis(0) 
-            y = -self.joystick.get_axis(1)
 
-            if abs(x) < deadzone and abs(y) < deadzone:
-                x, y = 0, 0
-            else:
-                self.front_rot = -atan2(y,x) + pi/2
-            self.back_rot = self.front_rot
-        else:
-            self.front_rot =    self.joystick.get_axis(0) * pi/2
-            # self.front_rot += (self.joystick.get_axis(0) if abs(self.joystick.get_axis(0)) > 0.1 else 0 ) * dt
-            # self.front_rot = max(-pi/2, min(self.front_rot, pi/2))
-            self.back_rot = -self.front_rot 
+        self.front_rot =    self.joystick.get_axis(0) * pi/2
+        # self.front_rot += (self.joystick.get_axis(0) if abs(self.joystick.get_axis(0)) > 0.1 else 0 ) * dt
+        # self.front_rot = max(-pi/2, min(self.front_rot, pi/2))
+        self.back_rot = -self.front_rot 
 
         self.speed = (self.joystick.get_axis(5) - self.joystick.get_axis(2))/2.0
 
