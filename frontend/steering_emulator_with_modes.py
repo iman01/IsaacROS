@@ -55,6 +55,8 @@ SPEED_RATE = {
     "neg": abs(SPEED_RATE_RAW["neg"])
 }
 
+RPM_LIMITS = (100, 180)
+
 deg = lambda r: r * 180./math.pi
 rad = lambda d: d * math.pi/180.
 poly = lambda p, x: ((p["a3"]*x + p["a2"])*x + p["a1"])*x + p["a0"]
@@ -71,12 +73,19 @@ class SteeringEmulator(Node):
         self.mode = self.get_parameter("steering_mode"
                     ).get_parameter_value().string_value.lower()
         
+        self.declare_parameter(
+            "RPM", 160,
+            ParameterDescriptor(description="RPM of robot's engine"))
+        self.rpm = self.get_parameter("RPM"
+                    ).get_parameter_value().integer_value
+        
         self.add_on_set_parameters_callback(self.parameters_callback)
 
         self.dt   = 1.0 / hz
         self.cmd  = 0.0           # latest /cmd_vel angular.z  (rad)
         self.speed = 0.0
         self.filtered_speed = 0.0
+        
 
         # per‑wheel states (rad)
         self.fl = self.fr = self.rl = self.rr = 0.0
@@ -104,6 +113,12 @@ class SteeringEmulator(Node):
         for param in params:
             if param.name == "steering_mode":
                 self.mode = param.value
+            elif param.name == "RPM":
+                if int(param.value) >= RPM_LIMITS[0] and int(param.value) <= RPM_LIMITS[1]:
+                    self.rpm = int(param.value) 
+                else: 
+                    return SetParametersResult(successful=False)
+
         return SetParametersResult(successful=True)
 
     # ---------- helpers ----------------------------------------- #

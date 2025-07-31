@@ -60,11 +60,14 @@ class Game:
         self.steering_mode = "unknown"
         self.available_modes = []
 
+        self.rpm = 0
+
         self.bridge = CvBridge()
 
         self.publisher = StatePublisher()   
         self.reciever = StateReciever(self)
-        self.param_reader = ParameterReader(self)
+        self.mode_reader = ParameterReader(self, param_name="steering_mode")
+        self.rpm_reader = ParameterReader(self, param_name="RPM")
         self.param_setter = ParameterSetter()
 
     def run(self):
@@ -78,8 +81,12 @@ class Game:
                     if event.button == 1:  # Replace 0 with your button index
                         pygame.quit()
                         sys.exit()
-                    elif event.button == 3:  # Example: Button 3 = cycle steering mode
+                    elif event.button == 2:  # Example: Button 3 = cycle steering mode
                         self.cycle_steering_mode()
+                    elif event.button == 3: # RPM up
+                        self.add_rpm(5)
+                    elif event.button == 0:
+                        self.add_rpm(-5)
 
 
             if self.joystick:
@@ -110,6 +117,12 @@ class Game:
         mode_rect.centerx = 150
         mode_rect.y = 10
         self.screen.blit(mode_label, mode_rect)
+
+        rpm_label = self.font.render(f"RPM: {self.rpm}", True, (0,0,0))
+        rpm_rect = rpm_label.get_rect()
+        rpm_rect.centerx = 150
+        rpm_rect.y = 250 - 20
+        self.screen.blit(rpm_label, rpm_rect)
 
         bar_y = 300
         bar_height = 12
@@ -238,6 +251,20 @@ class Game:
         print(f"Switching to steering mode: {new_mode}")
         self.param_setter.set_parameter('steering_mode', new_mode)
 
+    def add_rpm(self, value):
+        new_rpm = self.rpm + value
+
+        def on_rpm_set(success):
+            if success:
+                self.rpm = new_rpm
+                print(f"\nRPM successfully set to {new_rpm}\n")
+            else:
+                print("\nFailed to change RPM.\n")
+
+        self.param_setter.set_numeric_parameter('RPM', new_rpm, on_result=on_rpm_set)
+            
+    
+
 
 
 class StateReciever(Node):
@@ -337,18 +364,25 @@ class ParameterReader(Node):
         self.get_future.add_done_callback(self.handle_value_response)
 
         # Step 2: Get parameter descriptor
-        desc_req = DescribeParameters.Request()
-        desc_req.names = [self.param_name]
-        self.desc_future = self.desc_param_client.call_async(desc_req)
-        self.desc_future.add_done_callback(self.handle_descriptor_response)
+        if (self.param_name == "steering_mode"):
+            desc_req = DescribeParameters.Request() 
+            desc_req.names = [self.param_name]
+            self.desc_future = self.desc_param_client.call_async(desc_req)
+            self.desc_future.add_done_callback(self.handle_descriptor_response)
 
     def handle_value_response(self, future):
         try:
             response = future.result()
             if response.values:
-                value = response.values[0].string_value
-                self.game.steering_mode = value
-                self.get_logger().info(f"Steering mode set to '{value}'")
+                value = response.values[0]
+                if value.type == ParameterType.PARAMETER_INTEGER:
+                    self.game.rpm = value.integer_value
+                    self.get_logger().info(f"RPM set to {value.integer_value}")
+                elif value.type == ParameterType.PARAMETER_STRING:
+                    self.game.steering_mode = value.string_value
+                    self.get_logger().info(f"Steering mode set to '{value.string_value}'")
+                else:
+                    self.get_logger().warn(f"Unsupported parameter type: {value.type}")
             else:
                 self.get_logger().warn(f"Parameter '{self.param_name}' not found in node '{self.target_node}'")
         except Exception as e:
@@ -394,6 +428,35 @@ class ParameterSetter(Node):
         future = self.client.call_async(request)
         future.add_done_callback(self.handle_response)
 
+    def set_numeric_parameter(self, name: str, value: int, on_result: callable = None):
+        param = Parameter()
+        param.name = name
+        param.value = ParameterValue(
+            type=ParameterType.PARAMETER_INTEGER,
+            integer_value=value
+        )
+
+        request = SetParameters.Request()
+        request.parameters = [param]
+
+        future = self.client.call_async(request)
+
+        # Wrap the callback to pass result to user-defined callback if provided
+        def wrapped_callback(fut):
+            try:
+                response = fut.result()
+                success = response.results[0].successful if response.results else False
+                #self.get_logger().info(f"Set parameter '{name}' result: {success}")
+                if on_result:
+                    on_result(success)
+            except Exception as e:
+                self.get_logger().error(f"Error while setting parameter: {e}")
+                if on_result:
+                    on_result(False)
+
+        future.add_done_callback(wrapped_callback)
+
+        
     def handle_response(self, future):
         try:
             response = future.result()
@@ -413,7 +476,8 @@ if __name__ == '__main__':
     executor = MultiThreadedExecutor()
     executor.add_node(game.publisher)
     executor.add_node(game.reciever)
-    executor.add_node(game.param_reader)
+    executor.add_node(game.mode_reader)
+    executor.add_node(game.rpm_reader)
     executor.add_node(game.param_setter)
 
 
@@ -429,6 +493,7 @@ if __name__ == '__main__':
         executor.shutdown()
         game.publisher.destroy_node()
         game.reciever.destroy_node()
-        game.param_reader.destroy_node()
+        game.mode_reader.destroy_node()
+        game.rpm_reader.destroy_node()
         game.param_setter.destroy_node()
         rclpy.shutdown()
