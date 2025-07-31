@@ -7,6 +7,13 @@ from rclpy.qos import QoSProfile
 from geometry_msgs.msg import Quaternion
 from sensor_msgs.msg import JointState
 from tf2_ros import TransformBroadcaster, TransformStamped
+from geometry_msgs.msg import Twist
+
+from rcl_interfaces.srv import GetParameters
+from rcl_interfaces.srv import SetParameters
+from rcl_interfaces.msg import Parameter, ParameterValue
+from rcl_interfaces.srv import DescribeParameters
+from rcl_interfaces.msg import ParameterValue, ParameterType
 
 
 
@@ -42,15 +49,23 @@ class Game:
 
 
 
-        self.front_rot = 0.0
-        self.back_rot = 0.0
+        self.fl_angle = 0.0
+        self.fr_angle = 0.0
+        self.rl_angle = 0.0
+        self.rr_angle = 0.0
+        self.wheel_angle = 0.0
+
         self.speed = 0.0
 
+        self.steering_mode = "unknown"
+        self.available_modes = []
 
         self.bridge = CvBridge()
 
         self.publisher = StatePublisher()   
         self.reciever = StateReciever(self)
+        self.param_reader = ParameterReader(self)
+        self.param_setter = ParameterSetter()
 
     def run(self):
         print('Running Agrorob Controller...')
@@ -63,6 +78,8 @@ class Game:
                     if event.button == 1:  # Replace 0 with your button index
                         pygame.quit()
                         sys.exit()
+                    elif event.button == 3:  # Example: Button 3 = cycle steering mode
+                        self.cycle_steering_mode()
 
 
             if self.joystick:
@@ -70,7 +87,7 @@ class Game:
 
             self.draw()
 
-            if not self.publisher.send(self.front_rot, self.back_rot, self.speed):
+            if not self.publisher.send(self.wheel_angle, self.speed):
                 print("Node is not running, exiting...")
                 pygame.quit()
                 sys.exit()
@@ -87,6 +104,12 @@ class Game:
         speed_rect.centerx = 150
         speed_rect.y = 250 + 10 
         self.screen.blit(speed_label, speed_rect)
+
+        mode_label = self.font.render(f"Mode: {self.steering_mode}", True, (0, 0, 0))
+        mode_rect = mode_label.get_rect()
+        mode_rect.centerx = 150
+        mode_rect.y = 10
+        self.screen.blit(mode_label, mode_rect)
 
         bar_y = 300
         bar_height = 12
@@ -126,11 +149,35 @@ class Game:
             (center_x - arrow_spacing_x, center_y + arrow_spacing_y),  
             (center_x + arrow_spacing_x, center_y + arrow_spacing_y), 
         ]
+
+        # Determine angles to draw per mode
+        if self.steering_mode == 'car':
+            # rear wheels straight (0)
+            angles = [self.wheel_angle, self.wheel_angle, 0.0, 0.0]
+        elif self.steering_mode == '4ws':
+            # rear wheels opposite front wheels
+            angles = [self.wheel_angle, self.wheel_angle, -self.wheel_angle, -self.wheel_angle]
+        elif self.steering_mode == 'crab':
+            # rear wheels same as front wheels
+            angles = [self.wheel_angle, self.wheel_angle, self.wheel_angle, self.wheel_angle]
+        elif self.steering_mode == 'pivot':
+            # rear_left opposite front_left, rear_right same as front_right
+            angles = [self.wheel_angle, self.wheel_angle, -self.wheel_angle, self.wheel_angle]
+        else:
+            angles = [0.0, 0.0, 0.0, 0.0]  # fallback
+
         for i in range(4):
-            draw_arrow(arrow_centers[i], self.front_rot if i < 2 else self.back_rot)
+            draw_arrow(arrow_centers[i], angles[i])
         # border
         pygame.draw.rect(self.screen, (20, 20, 20), pygame.Rect(0, 0, 330, 330), 2)
         pygame.display.flip()
+    
+    def update_wheel_angles(self, fl, fr, rl, rr, mode):
+        self.fl_angle = fl
+        self.fr_angle = fr
+        self.rl_angle = rl
+        self.rr_angle = rr
+        self.steering_mode = mode
 
 
     
@@ -169,12 +216,27 @@ class Game:
 
     def handle_gamepad_input(self):
 
-        self.front_rot =    self.joystick.get_axis(0) * pi/2
-        # self.front_rot += (self.joystick.get_axis(0) if abs(self.joystick.get_axis(0)) > 0.1 else 0 ) * dt
-        # self.front_rot = max(-pi/2, min(self.front_rot, pi/2))
-        self.back_rot = -self.front_rot 
+        self.wheel_angle =    self.joystick.get_axis(0) * pi/2
 
         self.speed = (self.joystick.get_axis(5) - self.joystick.get_axis(2))/2.0
+
+
+    def cycle_steering_mode(self):
+        if not self.available_modes:
+            print("No steering modes available.")
+            return
+
+        try:
+            current_index = self.available_modes.index(self.steering_mode)
+        except ValueError:
+            current_index = -1
+
+        next_index = (current_index + 1) % len(self.available_modes)
+        new_mode = self.available_modes[next_index]
+
+        self.steering_mode = new_mode
+        print(f"Switching to steering mode: {new_mode}")
+        self.param_setter.set_parameter('steering_mode', new_mode)
 
 
 
@@ -191,83 +253,156 @@ class StateReciever(Node):
 
 
 
+
 class StatePublisher(Node):
     def __init__(self):
         rclpy.init()
-        super().__init__('state_publisher')
+        super().__init__('cmd_vel_publisher')
 
         qos_profile = QoSProfile(depth=5)
-        self.joint_pub = self.create_publisher(JointState, 'joint_states', qos_profile)
-        self.broadcaster = TransformBroadcaster(self, qos=qos_profile)
+        self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', qos_profile)
+
         self.nodeName = self.get_name()
-        self.get_logger().info("{0} started".format(self.nodeName))
+        self.get_logger().info(f"{self.nodeName} started")
+        self.loop_rate = self.create_rate(60)  # 60Hz
 
-        self.degree = pi / 180.0
-        self.loop_rate = self.create_rate(60)
-
-      
-
-        # message declarations
-        self.odom_trans = TransformStamped()
-        self.odom_trans.header.frame_id = 'odom'
-        self.odom_trans.child_frame_id = 'base_link'
-        self.joint_state = JointState()
-
-
-
-        
-
-
-    def send(self, front, back, speed): 
-        def euler_to_quaternion(roll, pitch, yaw):
-            qx = sin(roll/2) * cos(pitch/2) * cos(yaw/2) - cos(roll/2) * sin(pitch/2) * sin(yaw/2)
-            qy = cos(roll/2) * sin(pitch/2) * cos(yaw/2) + sin(roll/2) * cos(pitch/2) * sin(yaw/2)
-            qz = cos(roll/2) * cos(pitch/2) * sin(yaw/2) - sin(roll/2) * sin(pitch/2) * cos(yaw/2)
-            qw = cos(roll/2) * cos(pitch/2) * cos(yaw/2) + sin(roll/2) * sin(pitch/2) * sin(yaw/2)
-            return Quaternion(x=qx, y=qy, z=qz, w=qw)
-
+    def send(self, front, speed): 
         try:
             if rclpy.ok():
-                rclpy.spin_once(self)
 
-                now = self.get_clock().now()
-                self.joint_state.header.stamp = now.to_msg()
-                self.joint_state.name = ['front','back','speed']
-                self.joint_state.position = [front,back,speed]
+                # Create and populate Twist message
+                twist = Twist()
+                twist.linear.x = speed  # Forward speed
+                twist.angular.z = front  # Steering mapped directly
 
+                # Publish to /cmd_vel
+                self.cmd_vel_pub.publish(twist)
+                print(f"\rSent cmd_vel -> linear.x: {speed:.2f}, angular.z: {front:.2f}", end='')
 
-
-
-                # update transform
-                # (moving in a circle with radius=2)
-                self.odom_trans.header.stamp = now.to_msg()
-                self.odom_trans.transform.translation.x = cos(1)*2
-                self.odom_trans.transform.translation.y = sin(1)*2
-                self.odom_trans.transform.translation.z = 1.6
-                self.odom_trans.transform.rotation = \
-                    euler_to_quaternion(0, 0, 1 + pi/2) # roll,pitch,yaw
-# 
-                self.joint_pub.publish(self.joint_state)
-                # self.broadcaster.sendTransform(self.odom_trans)
-
-                # Create new robot state
-                # tilt += tinc
-                # if tilt < -0.5 or tilt > 0.0:
-                #     tinc *= -1
-                # height += hinc
-                # if height > 0.2 or height < 0.0:
-                #     hinc *= -1
-                # swivel += self.degree
-                # angle += self.degree/4
-
-                print(f"\rFront: {front}, Back: {back}, Speed: {speed}",end='')
                 self.loop_rate.sleep()
             else:
                 return False
         except KeyboardInterrupt:
             return False
-        
+
         return True
+
+        
+
+
+    def send(self, front, speed): 
+        try:
+            if rclpy.ok():
+
+
+                twist = Twist()
+                twist.linear.x = speed
+                twist.angular.z = front  # map front_rot directly to angular velocity
+
+                self.cmd_vel_pub.publish(twist)
+                print(f"\rSent cmd_vel -> linear.x: {speed:.2f}, angular.z: {front:.2f}", end='')
+
+                self.loop_rate.sleep()
+            else:
+                return False
+        except KeyboardInterrupt:
+            return False
+
+        return True
+
+
+
+
+class ParameterReader(Node):
+    def __init__(self, game: Game, target_node='steering_emulator', param_name='steering_mode'):
+        super().__init__('parameter_reader')
+        self.game = game
+        self.target_node = target_node
+        self.param_name = param_name
+
+        # Clients for getting parameter value and descriptor
+        self.get_param_client = self.create_client(GetParameters, f'/{target_node}/get_parameters')
+        self.desc_param_client = self.create_client(DescribeParameters, f'/{target_node}/describe_parameters')
+
+        # Wait for services
+        self.get_logger().info(f"Waiting for services from '{target_node}'...")
+        while not self.get_param_client.wait_for_service(timeout_sec=1.0) or \
+              not self.desc_param_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().warn(f"Waiting for parameter services...")
+
+        # Step 1: Get parameter value
+        get_req = GetParameters.Request()
+        get_req.names = [self.param_name]
+        self.get_future = self.get_param_client.call_async(get_req)
+        self.get_future.add_done_callback(self.handle_value_response)
+
+        # Step 2: Get parameter descriptor
+        desc_req = DescribeParameters.Request()
+        desc_req.names = [self.param_name]
+        self.desc_future = self.desc_param_client.call_async(desc_req)
+        self.desc_future.add_done_callback(self.handle_descriptor_response)
+
+    def handle_value_response(self, future):
+        try:
+            response = future.result()
+            if response.values:
+                value = response.values[0].string_value
+                self.game.steering_mode = value
+                self.get_logger().info(f"Steering mode set to '{value}'")
+            else:
+                self.get_logger().warn(f"Parameter '{self.param_name}' not found in node '{self.target_node}'")
+        except Exception as e:
+            self.get_logger().error(f"Failed to get parameter value: {e}")
+
+    def handle_descriptor_response(self, future):
+        try:
+            response = future.result()
+            if not response.descriptors:
+                self.get_logger().warn(f"No descriptor returned for '{self.param_name}'")
+                return
+
+            desc = response.descriptors[0].description
+            if desc:
+                modes = [s.strip() for s in desc.split('|') if s.strip()]
+                self.game.available_modes = modes
+                self.get_logger().info(f"Available steering modes: {modes}")
+            else:
+                self.get_logger().warn("Descriptor is empty.")
+        except Exception as e:
+            self.get_logger().error(f"Failed to get parameter descriptor: {e}")
+
+class ParameterSetter(Node):
+    def __init__(self, target_node_name='steering_emulator'):
+        super().__init__('parameter_setter')
+        self.target_node_name = target_node_name
+        self.client = self.create_client(SetParameters, f'/{target_node_name}/set_parameters')
+
+        self.get_logger().info(f"Waiting for '{self.target_node_name}' parameter service...")
+        while not self.client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().warn(f"Waiting for '{self.target_node_name}' parameter service...")
+
+    def set_parameter(self, name: str, value: str):
+        # Build request
+        param = Parameter()
+        param.name = name
+        param.value = ParameterValue(type=ParameterType.PARAMETER_STRING, string_value=value)
+
+
+        request = SetParameters.Request()
+        request.parameters = [param]
+
+        future = self.client.call_async(request)
+        future.add_done_callback(self.handle_response)
+
+    def handle_response(self, future):
+        try:
+            response = future.result()
+            if response.results and response.results[0].successful:
+                self.get_logger().info(f"Parameter set successfully.")
+            else:
+                self.get_logger().warn(f"Failed to set parameter.")
+        except Exception as e:
+            self.get_logger().error(f"Error while setting parameter: {e}")
 
 
 def ros_spin_thread(executor):
@@ -278,6 +413,9 @@ if __name__ == '__main__':
     executor = MultiThreadedExecutor()
     executor.add_node(game.publisher)
     executor.add_node(game.reciever)
+    executor.add_node(game.param_reader)
+    executor.add_node(game.param_setter)
+
 
     spin_thread = threading.Thread(target=ros_spin_thread, args=(executor,), daemon=True)
     spin_thread.start()
@@ -291,4 +429,6 @@ if __name__ == '__main__':
         executor.shutdown()
         game.publisher.destroy_node()
         game.reciever.destroy_node()
+        game.param_reader.destroy_node()
+        game.param_setter.destroy_node()
         rclpy.shutdown()

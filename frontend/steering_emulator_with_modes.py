@@ -9,6 +9,9 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import JointState
 from rcl_interfaces.msg import ParameterDescriptor
+from rcl_interfaces.msg import SetParametersResult
+
+
 
 # ------------------------------------------------------------------ #
 # 1 · Load configuration                                             #
@@ -59,13 +62,16 @@ poly = lambda p, x: ((p["a3"]*x + p["a2"])*x + p["a1"])*x + p["a0"]
 # ------------------------------------------------------------------ #
 class SteeringEmulator(Node):
     def __init__(self, hz: float = 20):
-        super().__init__("steering_emulator")
+        super().__init__('steering_emulator', allow_undeclared_parameters=True, automatically_declare_parameters_from_overrides=True)
+
 
         self.declare_parameter(
             "steering_mode", "car",
             ParameterDescriptor(description="car | 4ws | crab | pivot"))
         self.mode = self.get_parameter("steering_mode"
                     ).get_parameter_value().string_value.lower()
+        
+        self.add_on_set_parameters_callback(self.parameters_callback)
 
         self.dt   = 1.0 / hz
         self.cmd  = 0.0           # latest /cmd_vel angular.z  (rad)
@@ -90,9 +96,15 @@ class SteeringEmulator(Node):
 
     # ---------- callbacks --------------------------------------- #
     def _on_cmd(self, msg: Twist):
-        self.cmd = -msg.angular.z
+        self.cmd = msg.angular.z
         self.speed = msg.linear.x
         self.last_cmd = self.get_clock().now()
+
+    def parameters_callback(self, params):
+        for param in params:
+            if param.name == "steering_mode":
+                self.mode = param.value
+        return SetParametersResult(successful=True)
 
     # ---------- helpers ----------------------------------------- #
     def _slew(self, cur, tgt, lim_pos, lim_neg):
@@ -131,26 +143,33 @@ class SteeringEmulator(Node):
         }
 
         # update front wheels
-        self.fl = self._slew(self.fl, tgt_rad["L"],
-                             RATE["L"]["pos"], RATE["L"]["neg"])
-        self.fr = self._slew(self.fr, tgt_rad["R"],
-                             RATE["R"]["pos"], RATE["R"]["neg"])
-
-        # decide rear‑axle targets based on mode
+            # decide wheel targets based on mode
         if self.mode == "car":
+            tgt_fl, tgt_fr = tgt_rad["L"], tgt_rad["R"]
             tgt_rl, tgt_rr = 0.0, 0.0
-        elif self.mode == "4ws":
-            tgt_rl, tgt_rr = -self.fl, -self.fr
-        elif self.mode == "crab":
-            tgt_rl, tgt_rr =  self.fl,  self.fr
-        elif self.mode == "pivot":
-            tgt_rl, tgt_rr = -self.fl,  self.fr    # fl & rr same sign
-        else:                                      # failsafe
-            tgt_rl = tgt_rr = 0.0
 
+        elif self.mode == "4ws":
+            tgt_fl, tgt_fr = tgt_rad["L"], tgt_rad["R"]
+            tgt_rl, tgt_rr = -tgt_fl, -tgt_fr
+
+        elif self.mode == "crab":
+            tgt_fl, tgt_fr = tgt_rad["L"], tgt_rad["R"]
+            tgt_rl, tgt_rr = tgt_fl, tgt_fr
+
+        elif self.mode == "pivot":
+            tgt_fl, tgt_fr = tgt_rad["L"], -tgt_rad["R"]
+            tgt_rl, tgt_rr = -tgt_rad["L"], tgt_rad["R"]
+
+        else:
+            tgt_fl = tgt_fr = tgt_rl = tgt_rr = 0.0
+        
+        self.fl = self._slew(self.fl, tgt_fl, RATE["L"]["pos"], RATE["L"]["neg"])
+        self.fr = self._slew(self.fr, tgt_fr, RATE["R"]["pos"], RATE["R"]["neg"])
+
+        # update rear wheels
         self.rl = self._slew(self.rl, tgt_rl, RATE["L"]["pos"], RATE["L"]["neg"])
         self.rr = self._slew(self.rr, tgt_rr, RATE["R"]["pos"], RATE["R"]["neg"])
-
+            
         self.filtered_speed = self._slew_speed(self.filtered_speed, tgt_speed)
 
         # Apply polynomial transform to smoothed speed
