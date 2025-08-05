@@ -4,40 +4,37 @@
 Modes: car | 4ws | crab | pivot
 """
 
-
+import json, math, pathlib, rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import JointState
 from rcl_interfaces.msg import ParameterDescriptor
 from rcl_interfaces.msg import SetParametersResult
-import json, math, pathlib, rclpy, collections, numpy as np
 
 
 
 # ------------------------------------------------------------------ #
 # 1 · Load configuration                                             #
 # ------------------------------------------------------------------ #
-BASE = pathlib.Path(__file__).resolve().parent      # 🔸 NEW
-CFG_STEER = BASE / "steering_params"
-CFG_VEL   = BASE / "velocity_params"
+CFG = pathlib.Path(__file__).resolve().parent / "steering_params"
 
-
-def _load_from(folder, name, default):
-    try: return json.loads((folder / name).read_text())
-    except Exception: return default
-
+def _load(name, default):
+    try:
+        return json.loads((CFG / name).read_text())
+    except Exception:
+        return default
 
 POLY = {
-    "L":     _load_from(CFG_STEER, "poly_front_left.json",
-                        {"a3":0,"a2":0,"a1":1,"a0":0}),
-    "R":     _load_from(CFG_STEER, "poly_front_right.json",
-                        {"a3":0,"a2":0,"a1":1,"a0":0}),
-    "speed": _load_from(CFG_VEL,   "poly_speed.json",
-                        {"a3":0,"a2":1,"a1":2,"a0":0}),
+    "L": _load("poly_front_left.json",
+               {"a3": 0.0, "a2": 0.0, "a1": 1.0, "a0": 0.0}),
+    "R": _load("poly_front_right.json",
+               {"a3": 0.0, "a2": 0.0, "a1": 1.0, "a0": 0.0}),
+    "speed": _load("poly_speed.json",
+                {"a3": 0.0, "a2": 0.0, "a1": 1.0, "a0": 0.0})
 }
 
-RATE_RAW = _load_from(CFG_STEER, "steering_rate_profile.json",
-                      {"pos": 90, "neg": 90})
+RATE_RAW = _load("steering_rate_profile.json",
+                 {"pos": 90.0, "neg": 90.0})          # deg / s
 
 def _lim(side, sign):                     # resolves flat vs nested layout
     if "pos" in RATE_RAW:
@@ -50,25 +47,19 @@ RATE = {
     
 }
 
-ACCEL_POLY = _load_from(CFG_VEL, "speed_accel_poly.json",
-                        {"b2":-0.01,"b1":0.03,"b0":0.01})
-DELAY_S    = _load_from(CFG_VEL, "speed_delay.json",
-                        {"Td_ms":250})["Td_ms"]/1000.0
+SPEED_RATE_RAW = _load("speed_rate_profile.json",
+                       {"pos": 1.0, "neg": 1.0})  # m/s²
 
-
+SPEED_RATE = {
+    "pos": abs(SPEED_RATE_RAW["pos"]),
+    "neg": abs(SPEED_RATE_RAW["neg"])
+}
 
 RPM_LIMITS = (100, 180)
 
 deg = lambda r: r * 180./math.pi
 rad = lambda d: d * math.pi/180.
 poly = lambda p, x: ((p["a3"]*x + p["a2"])*x + p["a1"])*x + p["a0"]
-
-
-def a_max(u):                      
-    return max(0.0,
-               ACCEL_POLY["b2"]*u*u +
-               ACCEL_POLY["b1"]*u   +
-               ACCEL_POLY["b0"])
 
 # ------------------------------------------------------------------ #
 class SteeringEmulator(Node):
@@ -91,12 +82,9 @@ class SteeringEmulator(Node):
         self.add_on_set_parameters_callback(self.parameters_callback)
 
         self.dt   = 1.0 / hz
-        self.cmd_ang  = 0.0           # latest /cmd_vel angular.z  (rad)
+        self.cmd  = 0.0           # latest /cmd_vel angular.z  (rad)
         self.speed = 0.0
         self.filtered_speed = 0.0
-
-        self.v         = 0.0                      # current speed
-        self.delay_q   = collections.deque()      # 🔸 NEW (t,u)
         
 
         # per‑wheel states (rad)
@@ -117,12 +105,9 @@ class SteeringEmulator(Node):
 
     # ---------- callbacks --------------------------------------- #
     def _on_cmd(self, msg: Twist):
-        self.cmd_ang = -msg.angular.z
-        self.cmd_thr = msg.linear.x
+        self.cmd = -msg.angular.z
+        self.speed = msg.linear.x
         self.last_cmd = self.get_clock().now()
-
-        now = self.last_cmd.nanoseconds*1e-9
-        self.delay_q.append((now, self.cmd_thr))
 
     def parameters_callback(self, params):
         for param in params:
@@ -143,21 +128,32 @@ class SteeringEmulator(Node):
         d    = max(-step, min(step, tgt - cur))
         return cur + d
     
-
+    def _slew_speed(self, cur, tgt):
+        lim = SPEED_RATE["pos"] if tgt > cur else SPEED_RATE["neg"]
+        step = lim * self.dt
+        d = max(-step, min(step, tgt - cur))
+        return cur + d
+    
+    def _speed_poly(self, raw_speed):
+        # Example: separate forward/reverse behavior
+        if raw_speed >= 0:
+            return poly(POLY["speed"], raw_speed)
+        else:
+            return -poly(POLY["speed"], -raw_speed)
 
 
     # ---------- main loop --------------------------------------- #
     def _tick(self):
         now = self.get_clock().now()
-        if (now - self.last_cmd).nanoseconds/1e9 > self.timeout:
-            self.cmd_ang = 0.0; self.cmd_thr = 0.0; self.delay_q.clear()
+        timed_out = (now - self.last_cmd).nanoseconds / 1e9 > self.timeout
 
-
+        cmd_rad = 0.0 if timed_out else self.cmd
+        tgt_speed = 0.0 if timed_out else self.speed
 
         # per‑wheel calibrated targets
         tgt_rad = {
-            "L": rad(poly(POLY["L"], deg(self.cmd_ang))),
-            "R": rad(poly(POLY["R"], deg(self.cmd_ang))),
+            "L": rad(poly(POLY["L"], deg(cmd_rad))),
+            "R": rad(poly(POLY["R"], deg(cmd_rad))),
             
         }
 
@@ -189,22 +185,17 @@ class SteeringEmulator(Node):
         self.rl = self._slew(self.rl, tgt_rl, RATE["L"]["pos"], RATE["L"]["neg"])
         self.rr = self._slew(self.rr, tgt_rr, RATE["R"]["pos"], RATE["R"]["neg"])
             
-        now_s = now.nanoseconds*1e-9
-        while self.delay_q and now_s - self.delay_q[0][0] >= DELAY_S:
-            _, self._u_eff = self.delay_q.popleft()
-        u_eff = getattr(self,"_u_eff",0.0)
+        self.filtered_speed = self._slew_speed(self.filtered_speed, tgt_speed)
 
-        v_inf = poly(POLY["speed"], u_eff)
-        dv_lim = a_max(u_eff)*self.dt
-        dv = max(-dv_lim, min(dv_lim, v_inf - self.v))
-        self.v += dv    
+        # Apply polynomial transform to smoothed speed
+        filtered_output = self._speed_poly(self.filtered_speed)
 
         # publish ------------------------------------------------- #
         js = JointState()
         js.header.stamp = now.to_msg()
         js.name     = ["front_left", "front_right",
                        "rear_left",  "rear_right", "speed"]
-        js.position = [self.fl, self.fr, self.rl, self.rr, self.v]
+        js.position = [self.fl, self.fr, self.rl, self.rr, filtered_output]
         self.pub.publish(js)
 
 # ------------------------------------------------------------------ #
