@@ -175,7 +175,7 @@ class Game:
             angles = [self.wheel_angle, self.wheel_angle, self.wheel_angle, self.wheel_angle]
         elif self.steering_mode == 'pivot':
             # rear_left opposite front_left, rear_right same as front_right
-            angles = [self.wheel_angle, self.wheel_angle, -self.wheel_angle, self.wheel_angle]
+            angles = [self.wheel_angle, -self.wheel_angle, -self.wheel_angle, self.wheel_angle]
         else:
             angles = [0.0, 0.0, 0.0, 0.0]  # fallback
 
