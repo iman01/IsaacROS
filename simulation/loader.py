@@ -10,10 +10,39 @@ import threading
 from sensor_msgs.msg import Image
 import numpy as np
 import yaml
+import argparse
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Isaac Sim URDF Loader")
 
-simulation_app = SimulationApp({"headless": "--headless" in sys.argv})
+    parser.add_argument(
+        "--headless",
+        action="store_true",
+        help="Run in headless mode (no UI). Default: False"
+    )
+    parser.add_argument(
+        "--ghost-opacity",
+        type=float,
+        default=0,
+        help="Opacity of the ghost robot (0.0–1.0). If 0, the robot will not spawn. Default: 0"
+    )
+    parser.add_argument(
+        "--robot-urdf",
+        type=str,
+        default="agrorob/agrorob_visualization.urdf",
+        help="Path to main robot URDF. Default: agrorob/agrorob_visualization.urdf"
+    )
+    parser.add_argument(
+        "--ghost-urdf",
+        type=str,
+        default="agrorob/agrorob_visualization_ghost.urdf",
+        help="Path to ghost robot URDF. Default: agrorob/agrorob_visualization_ghost.urdf"
+    )
 
+    return parser.parse_args()
+
+args = parse_args()
+simulation_app = SimulationApp({"headless": args.headless})
 
 import isaacsim.core.utils.stage as stage_utils
 import isaacsim.core.utils.prims as prim_utils
@@ -22,6 +51,10 @@ import isaacsim.core.utils.numpy.rotations as rot_utils
 from isaacsim.core.api import World
 from isaacsim.core.api.objects import GroundPlane
 
+
+extensions.enable_extension("isaacsim.ros2.bridge")
+extensions.enable_extension("isaacsim.replicator.synthetic_recorder")
+extensions.enable_extension("omni.kit.window.script_editor")
 
 
 from isaacsim.asset.importer.urdf import _urdf
@@ -39,17 +72,15 @@ import omni.syntheticdata._syntheticdata as sd
 import omni.replicator.core as rep
 import omni.graph.core as og
 
-extensions.enable_extension("isaacsim.ros2.bridge")
-extensions.enable_extension("isaacsim.replicator.synthetic_recorder")
-extensions.enable_extension("omni.kit.window.script_editor")
 
 
-from pxr import UsdShade, Sdf, UsdGeom, Gf, Vt
+from pxr import UsdShade, Sdf, UsdGeom, Gf, Vt, Usd
 
 import omni.usd
 from pxr import UsdPhysics
 import isaacsim.core.utils.prims as prim_utils
 from isaacsim.sensors.camera import Camera
+import carb.settings
 
 
 def ros_spin(node):
@@ -62,6 +93,7 @@ def ros_spin(node):
 class URDFLoaderApp:
     def __init__(self):
         self.world = None
+        self.args = None
 
     def setup_scene(self): 
         def create_ground():
@@ -217,7 +249,7 @@ class URDFLoaderApp:
             import_config.distance_scale = 1
             import_config.density = 0.0
 
-            urdf_path = "agrorob/agrorob_visualization.urdf"
+            urdf_path = self.args.robot_urdf
 
             result, robot_model = omni.kit.commands.execute(
                 "URDFParseFile", urdf_path=urdf_path, import_config=import_config
@@ -237,6 +269,119 @@ class URDFLoaderApp:
                     xform.AddTranslateOp().Set((0, 0, 2.2))
                 else:
                     xform_api.Set((0, 0, 2.2))
+        
+        def create_ghost_robot():
+            import_config = _urdf.ImportConfig()
+            import_config.convex_decomp = False
+            import_config.fix_base = False
+            import_config.make_default_prim = False
+            import_config.self_collision = False
+            import_config.density = 0.0  # no physics
+
+            urdf_path = self.args.ghost_urdf
+
+            result, robot_model = omni.kit.commands.execute(
+                "URDFParseFile", urdf_path=urdf_path, import_config=import_config
+            )
+
+            result, prim_path = omni.kit.commands.execute(
+                "URDFImportRobot",
+                urdf_robot=robot_model,
+                import_config=import_config,
+            )
+
+            stage = omni.usd.get_context().get_stage()
+
+            ghost_path = "/ghost_robot"
+
+            move_prim(prim_path, ghost_path)
+            ghost_prim = prim_utils.get_prim_at_path(ghost_path)
+
+
+            if ghost_prim:
+                xform_api = ghost_prim.GetAttribute("xformOp:translate")
+                if not xform_api:
+                    xform = UsdGeom.Xformable(ghost_prim)
+                    xform.AddTranslateOp().Set((0.001, 0.001, 2.2))
+                else:
+                    xform_api.Set((0.001, 0.001, 2.2))
+
+            
+            apply_transparency_to_materials(ghost_path+"/Looks", self.args.ghost_opacity)
+                            
+        def move_prim(old_path, new_path):
+            omni.kit.commands.execute(
+                "MovePrim",
+                path_from=old_path,
+                path_to=new_path
+            )
+
+
+                    
+
+
+        def apply_transparency_to_materials(root_path, opacity=0.25):
+            stage = omni.usd.get_context().get_stage()
+            root_prim = stage.GetPrimAtPath(root_path)
+            carb.settings.get_settings().set("/rtx/raytracing/fractionalCutoutOpacity", True)
+
+            if not root_prim.IsValid():
+                print(f"[ERROR] Material root '{root_path}' not found.")
+                return
+
+            print(f"[INFO] Applying transparency to materials under: {root_path}")
+
+            for mat_prim in root_prim.GetChildren():
+                if not mat_prim.IsA(UsdShade.Material):
+                    continue
+
+                found_shader = False
+
+                for child in mat_prim.GetChildren():
+                    if child.GetTypeName() != "Shader":
+                        continue
+
+                    shader = UsdShade.Shader(child)
+                    shader_id = shader.GetIdAttr().Get()
+                    shader_path = child.GetPath()
+                    found_shader = True
+
+
+                    shader.CreateInput("enable_opacity", Sdf.ValueTypeNames.Bool).Set(True)
+                    shader.CreateInput("opacity_constant", Sdf.ValueTypeNames.Float).Set(opacity)
+
+                if not found_shader:
+                    print(f"[WARNING] No shader found under material: {mat_prim.GetPath()}")
+
+        def configure_collision_groups():
+            stage = omni.usd.get_context().get_stage()
+            group_names = ["CollisionGroupA", "CollisionGroupB"]
+            group_objs = {}
+            for name in group_names:
+                path = f"/World/{name}"
+                cg = UsdPhysics.CollisionGroup.Define(stage, path)
+                coll_api = Usd.CollectionAPI.Apply(cg.GetPrim(), UsdPhysics.Tokens.colliders)
+                includes_rel = coll_api.CreateIncludesRel()
+                filt_rel = cg.CreateFilteredGroupsRel()
+                group_objs[name] = {"cg": cg, "includes": includes_rel, "filters": filt_rel}
+
+            # Set filtering bidirectionally
+            group_objs["CollisionGroupA"]["filters"].AddTarget(
+                Sdf.Path("/World/CollisionGroupB"))
+            group_objs["CollisionGroupB"]["filters"].AddTarget(
+                Sdf.Path("/World/CollisionGroupA"))
+
+            
+            group_objs["CollisionGroupA"]["includes"].AddTarget("/agrorob_visualization")
+            group_objs["CollisionGroupB"]["includes"].AddTarget("/ghost_robot")
+
+                                
+
+
+    
+
+            
+
 
         def configure_cameras():
             def publish_rgb(camera: Camera, cam_name, freq):
@@ -313,6 +458,7 @@ class URDFLoaderApp:
         
         stage = omni.usd.get_context().get_stage()
         rep.orchestrator.set_capture_on_play(True)
+
         
         light_prim = stage.DefinePrim("/World/lightDistant1", "DistantLight")
         light_prim.GetAttribute("inputs:intensity").Set(1000.0)
@@ -326,12 +472,16 @@ class URDFLoaderApp:
         create_ground()
         create_objects()
         create_robot()
+        if (self.args.ghost_opacity):
+            create_ghost_robot()
+            configure_collision_groups()
         configure_cameras()
 
 
         self.world.reset()
 
-    def run(self):
+    def run(self, args):
+        self.args = args
         rclpy.init()
         node = JointStateListener()
         ros_thread = threading.Thread(target=ros_spin, args=(node,), daemon=True)
@@ -437,5 +587,8 @@ class JointStateListener(Node):
 
 
 
+
 if __name__ == "__main__":
-    URDFLoaderApp().run()
+
+    app = URDFLoaderApp()
+    app.run(args)
