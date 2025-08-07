@@ -120,7 +120,7 @@ class SteeringEmulator(Node):
 
     # ---------- callbacks --------------------------------------- #
     def _on_cmd(self, msg: Twist):
-        self.cmd_ang = -msg.angular.z
+        self.cmd_ang = msg.angular.z
         self.cmd_thr = msg.linear.x
         self.last_cmd = self.get_clock().now()
 

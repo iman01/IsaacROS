@@ -1,5 +1,6 @@
 
 source /opt/ros/humble/setup.sh
+source ros_msgs/install/setup.bash
 eval "$(~/miniconda3/bin/conda shell.bash hook)" 
 conda activate env_isaaclab
 tmux new-session -d -s mysession bash -c 'python3 simulation/loader.py --ghost-opacity 0.3; exec bash'

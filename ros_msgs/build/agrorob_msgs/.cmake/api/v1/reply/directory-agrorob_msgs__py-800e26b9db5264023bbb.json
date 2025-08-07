@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "agrorob_msgs__py",
+		"source" : "/home/iman/agriverse/IsaacROS/ros_msgs/build/agrorob_msgs/agrorob_msgs__py"
+	}
+}

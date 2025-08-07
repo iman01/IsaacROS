@@ -5,6 +5,8 @@ import sys
 
 import rclpy
 from rclpy.node import Node
+from rclpy.executors import MultiThreadedExecutor
+
 from sensor_msgs.msg import JointState
 import threading
 from sensor_msgs.msg import Image
@@ -51,6 +53,10 @@ import isaacsim.core.utils.extensions as extensions
 import isaacsim.core.utils.numpy.rotations as rot_utils
 from isaacsim.core.api import World
 from isaacsim.core.api.objects import GroundPlane
+
+if args.ghost_opacity:
+    from agrorob_msgs.msg import RobotState
+
 
 
 extensions.enable_extension("isaacsim.ros2.bridge")
@@ -486,25 +492,90 @@ class URDFLoaderApp:
 
         self.world.reset()
 
+    
+
     def run(self, args):
         self.args = args
         rclpy.init()
+
         node = JointStateListener()
-        ros_thread = threading.Thread(target=ros_spin, args=(node,), daemon=True)
-        ros_thread.start()
+        nodes = [node]
 
+        if args.ghost_opacity:
+            ghost_node = GhostJointStateListener()
+            nodes.append(ghost_node)
+        else:
+            ghost_node = None
 
+        executor = MultiThreadedExecutor()
+        for n in nodes:
+            executor.add_node(n)
+
+        # Spin in one thread
+        threading.Thread(target=executor.spin, daemon=True).start()
 
 
         self.setup_scene()
         
 
+        drive_apis, body_shin_drive_apis = self.configure_joints()
+        # ghost_drive_apis, ghost_body_shin_drive_apis = None, None
+        
+
+        if args.ghost_opacity != 0:
+            ghost_drive_apis, ghost_body_shin_drive_apis = self.configure_joints("/ghost_robot", "_ghost")
+
+        try:
+            while simulation_app.is_running():
+                
+                self.apply_joint_values(node, drive_apis, body_shin_drive_apis)
+                if args.ghost_opacity != 0:
+                    self.apply_joint_values(ghost_node, ghost_drive_apis, ghost_body_shin_drive_apis)
+
+                
+
+                self.world.step(render=True)
+                simulation_app.update()
+
+        except KeyboardInterrupt:
+            print("Simulation interrupted.")
+
+        simulation_app.close()
+        for n in nodes:
+            n.destroy_node()
+        rclpy.shutdown()
+
+
+    def apply_joint_values(self, _node, _drive_apis, _body_shin_drive_apis):
+        drive_velocities = {
+                    "FL": -(_node.fl_vel * 180./math.pi),  # isaak sim takes deg/s for angular joints
+                    "FR": _node.fr_vel * 180./math.pi,
+                    "RL": -(_node.rl_vel * 180./math.pi),  
+                    "RR": _node.rr_vel * 180./math.pi
+                }
+
+        for key in _drive_apis:
+            _drive_apis[key].GetTargetVelocityAttr().Set(drive_velocities[key])
+
+        # Steering angles (degrees)
+        steer_angles = {
+            "FL": _node.fl * 180 / math.pi,
+            "FR": _node.fr * 180 / math.pi,
+            "RL": _node.rl * 180 / math.pi,
+            "RR": _node.rr * 180 / math.pi,
+        }
+
+        for key in _body_shin_drive_apis:
+            _body_shin_drive_apis[key].GetTargetPositionAttr().Set(steer_angles[key])
+
+
+    def configure_joints(self, prefix="/agrorob_visualization", postfix=""):
         # WHEELS
         wheel_joints = {
-                "FL": "/agrorob_visualization/joints/shin_wheel_FL",
-                "FR": "/agrorob_visualization/joints/shin_wheel_FR",
-                "RL": "/agrorob_visualization/joints/shin_wheel_RL",
-                "RR": "/agrorob_visualization/joints/shin_wheel_RR",
+                "FL": f"{prefix}/joints/shin_wheel_FL{postfix}",
+                "FR": f"{prefix}/joints/shin_wheel_FR{postfix}",
+                "RL": f"{prefix}/joints/shin_wheel_RL{postfix}",
+                "RR": f"{prefix}/joints/shin_wheel_RR{postfix}",
             }
         stage = omni.usd.get_context().get_stage()
         drive_apis = {
@@ -520,55 +591,23 @@ class URDFLoaderApp:
 
         # Steering joints
         body_shin_joints = {
-            "FL": "/agrorob_visualization/joints/body_shin_FL",
-            "FR": "/agrorob_visualization/joints/body_shin_FR",
-            "RL": "/agrorob_visualization/joints/body_shin_RL",
-            "RR": "/agrorob_visualization/joints/body_shin_RR",
+            "FL": f"{prefix}/joints/body_shin_FL{postfix}",
+            "FR": f"{prefix}/joints/body_shin_FR{postfix}",
+            "RL": f"{prefix}/joints/body_shin_RL{postfix}",
+            "RR": f"{prefix}/joints/body_shin_RR{postfix}",
         }
         body_shin_drive_apis = {
             k: UsdPhysics.DriveAPI.Get(stage.GetPrimAtPath(v), "angular")
             for k, v in body_shin_joints.items()
             if stage.GetPrimAtPath(v).IsValid()
         }
-
         for key in body_shin_drive_apis:
             body_shin_drive_apis[key].GetDampingAttr().Set(100.0)
             body_shin_drive_apis[key].GetStiffnessAttr().Set(200.0)
 
-        try:
-            while simulation_app.is_running():
-                
+        return drive_apis, body_shin_drive_apis
 
-                drive_velocities = {
-                    "FL": -(node.fl_vel * 180./math.pi),  # isaak sim takes deg/s for angular joints
-                    "FR": node.fr_vel * 180./math.pi,
-                    "RL": -(node.rl_vel * 180./math.pi),  
-                    "RR": node.rr_vel * 180./math.pi
-                }
-
-                for key in drive_apis:
-                    drive_apis[key].GetTargetVelocityAttr().Set(drive_velocities[key])
-
-                # Steering angles (degrees)
-                steer_angles = {
-                    "FL": -node.fl * 180 / 3.14,
-                    "FR": -node.fr * 180 / 3.14,
-                    "RL": -node.rl * 180 / 3.14,
-                    "RR": -node.rr * 180 / 3.14,
-                }
-
-                for key in body_shin_drive_apis:
-                    body_shin_drive_apis[key].GetTargetPositionAttr().Set(steer_angles[key])
-
-                self.world.step(render=True)
-                simulation_app.update()
-
-        except KeyboardInterrupt:
-            print("Simulation interrupted.")
-
-        simulation_app.close()
-        node.destroy_node()
-        rclpy.shutdown()
+    
 
 
 class JointStateListener(Node):
@@ -590,6 +629,7 @@ class JointStateListener(Node):
         self.rl_vel = 0.0
         self.rr_vel = 0.0
 
+
     def listener_callback(self, msg):
         joint_positions = dict(zip(msg.name, msg.position))
         joint_velocities = dict(zip(msg.name, msg.velocity)) if msg.velocity else {}
@@ -608,6 +648,47 @@ class JointStateListener(Node):
 
         # You can store individual ones if needed later
         self.speed = (self.fl_vel + self.fr_vel + self.rl_vel + self.rr_vel) / 4.0
+
+class GhostJointStateListener(Node):
+    def __init__(self):
+        super().__init__("ghost_joint_state_listener")
+        self.subscription = self.create_subscription(
+            RobotState, "/agrorob/robot_state", self.listener_callback, 10
+        )
+
+        self.fl = 0.0  # front left
+        self.fr = 0.0  # front right
+        self.rl = 0.0  # rear left
+        self.rr = 0.0  # rear right
+
+        self.fl_vel = 0.0
+        self.fr_vel = 0.0
+        self.rl_vel = 0.0
+        self.rr_vel = 0.0
+        
+
+    def listener_callback(self, msg):
+        self.fl = msg.left_front_wheel_turn_angle_rad
+        self.fr = msg.right_front_wheel_turn_angle_rad
+        self.rl = msg.left_rear_wheel_turn_angle_rad 
+        self.rr = msg.right_rear_wheel_turn_angle_rad  
+
+        # self.fl_vel = msg.left_front_wheel_rotational_speed_rad_s
+        # self.fr_vel = msg.right_front_wheel_rotational_speed_rad_s
+        # self.rl_vel = msg.left_rear_wheel_rotational_speed_rad_s
+        # self.rr_vel = msg.right_rear_wheel_rotational_speed_rad_s
+
+        self.fl_vel = self.impulses_to_rad_s(msg.left_front_wheel_encoder_imp)
+        self.fr_vel = self.impulses_to_rad_s(msg.right_front_wheel_encoder_imp)
+        self.rl_vel = self.impulses_to_rad_s(msg.left_rear_wheel_encoder_imp)
+        self.rr_vel = self.impulses_to_rad_s(msg.right_rear_wheel_encoder_imp)
+
+    def impulses_to_rad_s(self, impulses_scaled):
+        impulses_per_sec = impulses_scaled / 100.0
+        revolutions_per_sec = impulses_per_sec / 54.0
+        rad_per_sec = revolutions_per_sec * 2 * math.pi
+        return rad_per_sec
+
 
 
 

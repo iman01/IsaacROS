@@ -1,0 +1,67 @@
+[0.005s] Invoking command in '/home/iman/agriverse/IsaacROS/ros_msgs/build/agrorob_msgs': CMAKE_PREFIX_PATH=/opt/ros/humble CONDA_PROMPT_MODIFIER=(env_isaaclab) /usr/bin/cmake /home/iman/agriverse/IsaacROS/ros_msgs/src/agrorob_msgs -DCMAKE_INSTALL_PREFIX=/home/iman/agriverse/IsaacROS/ros_msgs/install/agrorob_msgs
+[0.013s] -- Found ament_cmake: 1.3.12 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.097s] -- Found std_msgs: 4.9.0 (/opt/ros/humble/share/std_msgs/cmake)
+[0.107s] -- Found rosidl_generator_c: 3.1.7 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+[0.108s] -- Found rosidl_adapter: 3.1.7 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[0.111s] -- Found rosidl_generator_cpp: 3.1.7 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+[0.117s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.123s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.132s] -- Found rosidl_default_generators: 1.2.0 (/opt/ros/humble/share/rosidl_default_generators/cmake)
+[0.304s] -- Found ament_cmake_ros: 0.10.0 (/opt/ros/humble/share/ament_cmake_ros/cmake)
+[0.591s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.683s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.706s] -- Found PythonInterp: /home/iman/miniconda3/envs/env_isaaclab/bin/python3 (found suitable version "3.10.18", minimum required is "3.6") 
+[0.707s] -- Found python_cmake_module: 0.10.0 (/opt/ros/humble/share/python_cmake_module/cmake)
+[0.724s] -- Found PythonLibs: /home/iman/miniconda3/envs/env_isaaclab/lib/libpython3.10.so (found suitable version "3.10.18", minimum required is "3.5") 
+[0.724s] -- Using PYTHON_EXECUTABLE: /home/iman/miniconda3/envs/env_isaaclab/bin/python3
+[0.724s] -- Using PYTHON_INCLUDE_DIRS: /home/iman/miniconda3/envs/env_isaaclab/include/python3.10
+[0.724s] -- Using PYTHON_LIBRARIES: /home/iman/miniconda3/envs/env_isaaclab/lib/libpython3.10.so
+[0.740s] -- Found PythonExtra: .so  
+[0.857s] -- Using numpy include directory: /home/iman/.local/lib/python3.10/site-packages/numpy/core/include
+[0.863s] -- Found ament_lint_auto: 0.12.14 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[0.873s] -- Added test 'lint_cmake' to check CMake code style
+[0.873s] -- Added test 'xmllint' to check XML markup files
+[0.874s] -- Configuring done
+[0.888s] -- Generating done
+[0.893s] -- Build files have been written to: /home/iman/agriverse/IsaacROS/ros_msgs/build/agrorob_msgs
+[0.899s] Invoked command in '/home/iman/agriverse/IsaacROS/ros_msgs/build/agrorob_msgs' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble CONDA_PROMPT_MODIFIER=(env_isaaclab) /usr/bin/cmake /home/iman/agriverse/IsaacROS/ros_msgs/src/agrorob_msgs -DCMAKE_INSTALL_PREFIX=/home/iman/agriverse/IsaacROS/ros_msgs/install/agrorob_msgs
+[0.899s] Invoking command in '/home/iman/agriverse/IsaacROS/ros_msgs/build/agrorob_msgs': CMAKE_PREFIX_PATH=/opt/ros/humble CONDA_PROMPT_MODIFIER=(env_isaaclab) /usr/bin/cmake --build /home/iman/agriverse/IsaacROS/ros_msgs/build/agrorob_msgs -- -j32 -l32
+[0.924s] [  3%] [34m[1mGenerating C code for ROS interfaces[0m
+[0.930s] [  6%] [34m[1mGenerating C++ code for ROS interfaces[0m
+[0.936s] [  6%] Built target ament_cmake_python_copy_agrorob_msgs
+[0.951s] Traceback (most recent call last):
+[0.951s]   File "/opt/ros/humble/share/rosidl_generator_c/cmake/../../../lib/rosidl_generator_c/rosidl_generator_c", line 8, in <module>
+[0.951s]     from rosidl_generator_c import generate_c
+[0.951s]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rosidl_generator_c/__init__.py", line 15, in <module>
+[0.951s]     from rosidl_cmake import convert_camel_case_to_lower_case_underscore
+[0.951s]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rosidl_cmake/__init__.py", line 24, in <module>
+[0.951s]     from rosidl_parser.parser import parse_idl_file
+[0.951s]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rosidl_parser/parser.py", line 20, in <module>
+[0.951s]     from lark import Lark
+[0.951s] ModuleNotFoundError: No module named 'lark'
+[0.955s] gmake[2]: *** [CMakeFiles/agrorob_msgs__rosidl_generator_c.dir/build.make:119: rosidl_generator_c/agrorob_msgs/msg/robot_state.h] Error 1
+[0.955s] gmake[1]: *** [CMakeFiles/Makefile2:212: CMakeFiles/agrorob_msgs__rosidl_generator_c.dir/all] Error 2
+[0.955s] gmake[1]: *** Waiting for unfinished jobs....
+[0.956s] Traceback (most recent call last):
+[0.956s]   File "/opt/ros/humble/share/rosidl_generator_cpp/cmake/../../../lib/rosidl_generator_cpp/rosidl_generator_cpp", line 8, in <module>
+[0.956s]     from rosidl_generator_cpp import generate_cpp
+[0.956s]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rosidl_generator_cpp/__init__.py", line 17, in <module>
+[0.956s]     from rosidl_cmake import generate_files
+[0.956s]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rosidl_cmake/__init__.py", line 24, in <module>
+[0.956s]     from rosidl_parser.parser import parse_idl_file
+[0.956s]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rosidl_parser/parser.py", line 20, in <module>
+[0.956s]     from lark import Lark
+[0.956s] ModuleNotFoundError: No module named 'lark'
+[0.960s] gmake[2]: *** [CMakeFiles/agrorob_msgs__cpp.dir/build.make:125: rosidl_generator_cpp/agrorob_msgs/msg/robot_state.hpp] Error 1
+[0.960s] gmake[1]: *** [CMakeFiles/Makefile2:265: CMakeFiles/agrorob_msgs__cpp.dir/all] Error 2
+[1.030s] running egg_info
+[1.036s] creating agrorob_msgs.egg-info
+[1.036s] writing agrorob_msgs.egg-info/PKG-INFO
+[1.036s] writing dependency_links to agrorob_msgs.egg-info/dependency_links.txt
+[1.036s] writing top-level names to agrorob_msgs.egg-info/top_level.txt
+[1.036s] writing manifest file 'agrorob_msgs.egg-info/SOURCES.txt'
+[1.053s] reading manifest file 'agrorob_msgs.egg-info/SOURCES.txt'
+[1.054s] writing manifest file 'agrorob_msgs.egg-info/SOURCES.txt'
+[1.072s] [  6%] Built target ament_cmake_python_build_agrorob_msgs_egg
+[1.073s] gmake: *** [Makefile:146: all] Error 2
+[1.075s] Invoked command in '/home/iman/agriverse/IsaacROS/ros_msgs/build/agrorob_msgs' returned '2': CMAKE_PREFIX_PATH=/opt/ros/humble CONDA_PROMPT_MODIFIER=(env_isaaclab) /usr/bin/cmake --build /home/iman/agriverse/IsaacROS/ros_msgs/build/agrorob_msgs -- -j32 -l32

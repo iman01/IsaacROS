@@ -1,0 +1,6 @@
+{
+  "package_name": "agrorob_msgs",
+  "non_idl_tuples": [
+    "/home/iman/agriverse/IsaacROS/ros_msgs/src/agrorob_msgs:msg/RobotState.msg"
+  ]
+}

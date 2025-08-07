@@ -1,0 +1,6 @@
+setup.py
+agrorob_msgs/__init__.py
+agrorob_msgs.egg-info/PKG-INFO
+agrorob_msgs.egg-info/SOURCES.txt
+agrorob_msgs.egg-info/dependency_links.txt
+agrorob_msgs.egg-info/top_level.txt
