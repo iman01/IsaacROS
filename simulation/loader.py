@@ -10,6 +10,7 @@ import threading
 from sensor_msgs.msg import Image
 import numpy as np
 import yaml
+import math
 import argparse
 
 def parse_args():
@@ -81,6 +82,11 @@ from pxr import UsdPhysics
 import isaacsim.core.utils.prims as prim_utils
 from isaacsim.sensors.camera import Camera
 import carb.settings
+
+
+WHEEL_RADIUS = 0.4  # meters
+
+
 
 
 def ros_spin(node):
@@ -508,7 +514,8 @@ class URDFLoaderApp:
         }
 
         for key in drive_apis:
-            drive_apis[key].GetDampingAttr().Set(6000.0)
+            drive_apis[key].GetMaxForceAttr().Set(1e6) 
+            drive_apis[key].GetDampingAttr().Set(1000.0)
             drive_apis[key].GetStiffnessAttr().Set(0.0)
 
         # Steering joints
@@ -530,13 +537,17 @@ class URDFLoaderApp:
 
         try:
             while simulation_app.is_running():
-                velocity = node.speed * 400
+                
 
-                # Drive direction
+                drive_velocities = {
+                    "FL": -(node.fl_vel * 180./math.pi),  # isaak sim takes deg/s for angular joints
+                    "FR": node.fr_vel * 180./math.pi,
+                    "RL": -(node.rl_vel * 180./math.pi),  
+                    "RR": node.rr_vel * 180./math.pi
+                }
+
                 for key in drive_apis:
-                    drive_apis[key].GetTargetVelocityAttr().Set(
-                        velocity if key in ["FR", "RR"] else -velocity
-                    )
+                    drive_apis[key].GetTargetVelocityAttr().Set(drive_velocities[key])
 
                 # Steering angles (degrees)
                 steer_angles = {
@@ -574,15 +585,29 @@ class JointStateListener(Node):
         self.rl = 0.0  # rear left
         self.rr = 0.0  # rear right
 
+        self.fl_vel = 0.0
+        self.fr_vel = 0.0
+        self.rl_vel = 0.0
+        self.rr_vel = 0.0
+
     def listener_callback(self, msg):
         joint_positions = dict(zip(msg.name, msg.position))
-        self.speed = joint_positions.get("speed", 0.0)
+        joint_velocities = dict(zip(msg.name, msg.velocity)) if msg.velocity else {}
 
-        # Support full 4-wheel steering if provided
+        # Steering angles
         self.fl = joint_positions.get("front_left", joint_positions.get("front", 0.0))
         self.fr = joint_positions.get("front_right", joint_positions.get("front", 0.0))
         self.rl = joint_positions.get("rear_left", joint_positions.get("back", 0.0))
         self.rr = joint_positions.get("rear_right", joint_positions.get("back", 0.0))
+
+        # Velocity (per-wheel or fallback to average)
+        self.fl_vel = joint_velocities.get("front_left", 0.0)
+        self.fr_vel = joint_velocities.get("front_right", 0.0)
+        self.rl_vel = joint_velocities.get("rear_left", 0.0)
+        self.rr_vel = joint_velocities.get("rear_right", 0.0)
+
+        # You can store individual ones if needed later
+        self.speed = (self.fl_vel + self.fr_vel + self.rl_vel + self.rr_vel) / 4.0
 
 
 

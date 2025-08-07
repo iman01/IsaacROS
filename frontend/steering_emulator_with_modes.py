@@ -20,6 +20,7 @@ import json, math, pathlib, rclpy, collections, numpy as np
 BASE = pathlib.Path(__file__).resolve().parent      # 🔸 NEW
 CFG_STEER = BASE / "steering_params"
 CFG_VEL   = BASE / "velocity_params"
+WHEEL_RADIUS = 0.78 #meters
 
 
 def _load_from(folder, name, default):
@@ -62,6 +63,7 @@ RPM_LIMITS = (100, 180)
 deg = lambda r: r * 180./math.pi
 rad = lambda d: d * math.pi/180.
 poly = lambda p, x: ((p["a3"]*x + p["a2"])*x + p["a1"])*x + p["a0"]
+ms_to_rad = lambda ms : ms/WHEEL_RADIUS
 
 
 def a_max(u):                      
@@ -96,6 +98,7 @@ class SteeringEmulator(Node):
         self.filtered_speed = 0.0
 
         self.v         = 0.0                      # current speed
+        self.out_vel   = 0.0
         self.delay_q   = collections.deque()      # 🔸 NEW (t,u)
         
 
@@ -198,14 +201,28 @@ class SteeringEmulator(Node):
         dv_lim = a_max(u_eff)*self.dt
         dv = max(-dv_lim, min(dv_lim, v_inf - self.v))
         self.v += dv    
+        self.out_vel = ms_to_rad(self.v)
+        wheel_angular_velocities = {"fl": self.out_vel, "fr": self.out_vel, "rl": self.out_vel, "rr": self.out_vel} #TODO: Add logic for speed calculation while steering
 
         # publish ------------------------------------------------- #
         js = JointState()
         js.header.stamp = now.to_msg()
         js.name     = ["front_left", "front_right",
-                       "rear_left",  "rear_right", "speed"]
-        js.position = [self.fl, self.fr, self.rl, self.rr, self.v]
+                       "rear_left",  "rear_right"]
+        js.position = [self.fl, self.fr, self.rl, self.rr]
+
+        js.velocity = [
+            wheel_angular_velocities["fl"],
+            wheel_angular_velocities["fr"],
+            wheel_angular_velocities["rl"],
+            wheel_angular_velocities["rr"],
+        ]
         self.pub.publish(js)
+
+
+
+
+
 
 # ------------------------------------------------------------------ #
 def main():
