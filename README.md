@@ -15,7 +15,7 @@ NVIDIA’s Isaac Lab simulator with ROS 2 to provide a digital twin of the Agr
 | `data_collection/`           | Python scripts to convert images and labels produced by Isaac Sim’s Synthetic Data Recorder into COCO and YOLO datasets.  These scripts scan all label files, build a class map and split data into train/val sets. |
 | `frontend/`                  | A pygame‑based controller (`main.py`) that receives live camera feeds from the simulator, supports gamepad input and publishes `/cmd_vel` commands.  Includes `steering_emulator_with_modes.py` which emulates the robot’s steering and wheel dynamics in four modes (car, four‑wheel steer, crab and pivot). |
 | `ros_msgs/`                  | Custom ROS 2 message package (`agrorob_msgs`) containing `RobotState.msg`.  Building these messages allows the ghost robot to publish wheel encoders and joint angles. |
-| `simulation/`                | Isaac Lab loader (`loader.py`) that spawns the Agrorob model, optional ghost robot, ground plane and crop field.  Includes a configurable YAML file (`agrorob_crops.yaml`) describing rows of maize and various weeds, and textures used for the ground plane. |
+| `simulation/`                | Isaac Lab loader (`loader.py`) that spawns the Agrorob model, optional ghost robot, ground plane and crop field.  Includes a configurable YAML files in `config/`: `agrorob_cropcraft.yaml` describing rows of maize and various weeds, and textures used for the ground plane, `default.yaml`, `ghost.yaml` describing general simulation configuration |
 | `textures/`                  | JPEG textures for dirt, maize leaves, weed leaves and rocks used in the simulation. |
 | `virtual_gamepad/`           | Placeholder directory for future virtual gamepad implementations. |
 | `requirements.txt`           | Python dependencies for the front‑end controller and data‑conversion scripts. |
@@ -93,21 +93,62 @@ This script activates Isaac Lab, spawns the Agrorob robot in a crop field and o
 To run only the Isaac Lab simulator:
 
 ```
-./run_isaac.sh               # uses loader.py with defaults
+./run_isaac.sh               # uses loader.py with default config
 # or manually:
 source /opt/ros/humble/setup.bash
 conda activate env_isaaclab
 python3 simulation/loader.py
 ```
 
-The loader supports several command‑line arguments:
+The loader takes one command‑line argument:
 
-* `--headless` — run in headless mode without rendering a GUI.
-* `--ghost-opacity <float>` — spawn a semi‑transparent ghost robot (0.0 hides it, 1.0 fully opaque).
-* `--robot-urdf <path>` — path to the primary robot URDF (default: `agrorob/agrorob_visualization.urdf`).
-* `--ghost-urdf <path>` — path to the ghost robot URDF used when ghost opacity is non‑zero.
+* `--config` — `str` path to simulation config YAML file .
 
-The simulator loads `simulation/crops.usdc` (generated via CropCraft) and applies a textured ground plane.  It also loads three cameras on the robot and publishes `/joint_states` messages.
+
+The simulator loads `simulation/world/crops.usdc` (generated via CropCraft) and applies a textured ground plane.  It also loads three cameras on the robot and publishes `/joint_states` messages.
+
+## Simulation Configuration Overview
+
+This configuration file defines the parameters for running robot simulation.  
+It specifies the robot urdf model, environment assets, crop layout, and onboard camera configurations.
+
+### General Settings
+
+- **`headless`**:  
+  Whether to run the simulation without a visible rendering window.  
+  - `false` → GUI is enabled.  
+  - `true` → Runs without graphics (for faster training or remote execution).
+
+- **`robot_urdf`**:  
+  Path to the URDF file containing the robot’s 3D model and kinematics.  
+  Example: `agrorob/agrorob_visualization.urdf`
+
+- **`ghost_urdf`**:  
+  Optional URDF for a “ghost” version of the robot, used for visualization or debugging.  
+
+- **`ghost_opacity`**:  
+  Opacity value (0.0–1.0) for the ghost robot.  
+  - `0.0` → Ghost robot will not spawn.  
+
+- **`crops_usdc`**:  
+  USD stage file containing the simulated crop field.  
+
+- **`semantics_yaml`**:  
+  CropCraft configuration file that describes the field layout and crop types.
+
+---
+
+#### Camera Configurations
+
+The `cameras` list defines virtual cameras mounted on the robot.  
+Each camera entry includes:
+
+- **`name`**: Identifier for the camera.  
+- **`prim_path`**: USD prim path where the camera is attached in the simulation.  
+- **`position`**: Camera position relative to the robot’s base link `[x, y, z]` in meters.  
+- **`orientation_euler_deg`**: Camera orientation in degrees `[roll, pitch, yaw]`.  
+
+---
 
 ### Running the front‑end separately
 
@@ -130,13 +171,13 @@ Pressing the triggers on the gamepad controls speed; the average value of both t
 
 ### Ghost mode
 
-The `run_ghost.sh` script demonstrates how to use the ghost robot to visualise commanded trajectories alongside the main robot.  It sources the built `agrorob_msgs` workspace, launches `loader.py` with `--ghost-opacity 0.3` and runs the steering emulator.  The ghost robot receives `RobotState` messages directly from recorded bag and mirrors wheel angles, allowing you to compare emulated and actual steering behaviour, recorded from real robot.
+The `run_ghost.sh` script demonstrates how to use the ghost robot to visualise commanded trajectories alongside the main robot.  It sources the built `agrorob_msgs` workspace, launches `loader.py` with `ghost.yaml` configuration and runs the steering emulator.  The ghost robot receives `RobotState` messages directly from recorded bag and mirrors wheel angles, allowing you to compare emulated and actual steering behaviour, recorded from real robot.
 
 ---
 
 ## Field Configuration
 
-The simulation includes a configurable crop field defined in `simulation/agrorob_crops.yaml`.  This YAML file describes the geometry of maize beds and weed distributions.  Key parameters include:
+The simulation includes a configurable crop field defined in `simulation/config/agrorob_cropcraft.yaml`.  This YAML file describes the geometry of maize beds and weed distributions.  Key parameters include:
 
 * **Bed geometry** – set the width of each bed, number of rows, plant spacing and random height variation.  The example configuration defines three beds of maize with two rows per bed, adjustable plant height and optional offsets.
 * **Weed types** – specify densities and minimum separation for various weed species (portulaca, polygonum and taraxacum) in both “big” and “small” variants.
@@ -152,7 +193,7 @@ After editing the YAML file you must regenerate the crop field:
 
    This will produce a Blender file `crops.blend` containing the generated plants.
 
-2. Open `crops.blend` in Blender, select the **generated** collection and export it as USD (`crops.usdc`). Overwrite the existing `simulation/crops.usdc`.
+2. Open `crops.blend` in Blender, select the **generated** collection and export it as USD (`crops.usdc`). Overwrite the existing `simulation/world/crops.usdc`.
    **Make sure you checked `Export selection` in blener export options**
 
 3. If you added new plant assets, copy their textures into the `textures/` directory so the simulator can find them.
@@ -196,5 +237,6 @@ One of the goals of this project is to collect realistic synthetic datasets for 
 * **Synthetic data recorder** – capture high‑quality annotated datasets (RGB images plus tight 2D bounding boxes) and convert them into COCO or YOLO formats:contentReference. Ideal for training weed‑detection models.
 
 ---
+
 
 
