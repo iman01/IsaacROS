@@ -1,0 +1,26 @@
+headless: false
+
+robot_urdf: agrorob/agrorob_visualization.urdf
+ghost_urdf: agrorob/agrorob_visualization_ghost.urdf
+
+#If ghost_opacity = 0 ghost will not be spawned
+ghost_opacity: 0.3
+
+crops_usdc: simulation/world/crops.usdc
+
+#Cropcraft config used to generate the field
+semantics_yaml: simulation/config/agrorob_cropcraft.yaml
+
+cameras:
+  - name: camera_front
+    prim_path: /agrorob_visualization/base_link/camera_front
+    position: [1.45, 0, 2]
+    orientation_euler_deg: [0, 15, 0]
+  - name: camera_left
+    prim_path: /agrorob_visualization/base_link/camera_left
+    position: [1.58, 0.5, 1.95]
+    orientation_euler_deg: [0, 90, 0]
+  - name: camera_right
+    prim_path: /agrorob_visualization/base_link/camera_right
+    position: [1.58, -0.52, 1.95]
+    orientation_euler_deg: [0, 90, 0]
