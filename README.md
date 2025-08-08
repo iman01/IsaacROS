@@ -107,12 +107,14 @@ The loader takes one command‑line argument:
 
 The simulator loads `simulation/world/crops.usdc` (generated via CropCraft) and applies a textured ground plane.  It also loads three cameras on the robot and publishes `/joint_states` messages.
 
-## Simulation Configuration Overview
+---
+
+### Simulation Configuration Overview
 
 This configuration file defines the parameters for running robot simulation.  
 It specifies the robot urdf model, environment assets, crop layout, and onboard camera configurations.
 
-### General Settings
+ **General Settings**
 
 - **`headless`**:  
   Whether to run the simulation without a visible rendering window.  
@@ -136,9 +138,9 @@ It specifies the robot urdf model, environment assets, crop layout, and onboard 
 - **`semantics_yaml`**:  
   CropCraft configuration file that describes the field layout and crop types.
 
----
 
-#### Camera Configurations
+
+**Camera Configurations**
 
 The `cameras` list defines virtual cameras mounted on the robot.  
 Each camera entry includes:
@@ -231,12 +233,13 @@ One of the goals of this project is to collect realistic synthetic datasets for 
 
 * **Realistic digital twin** – the Agrorob URDF is dimensionally accurate and includes three cameras whose placement matches the physical robot.  A ghost robot mode lets you compare emulated and actual recorded wheel states.
 * **Multiple steering modes** – choose between car, four‑wheel‑steer, crab and pivot modes to suit your task.  Mode switching is done via the controller and reflected on the HUD.
-* **Gamepad and keyboard control** – the front‑end supports gamepad input with analogue speed via trigger averaging and also falls back to keyboard control when no gamepad is found:contentReference.
+* **Gamepad and keyboard control** – the front‑end supports gamepad input with analogue speed via trigger averaging and also falls back to keyboard control when no gamepad is found.
 * **Live feedback** – the controller displays wheel angles, current steering mode, speed and RPM in real time.  Camera feeds from Isaac Lab are streamed into the pygame window.
 * **Customisable crop fields** – generate arbitrary combinations of maize rows and weeds using the YAML file and CropCraft.
-* **Synthetic data recorder** – capture high‑quality annotated datasets (RGB images plus tight 2D bounding boxes) and convert them into COCO or YOLO formats:contentReference. Ideal for training weed‑detection models.
+* **Synthetic data recorder** – capture high‑quality annotated datasets (RGB images plus tight 2D bounding boxes) and convert them into COCO or YOLO. Ideal for training weed‑detection models.
 
 ---
+
 
 
 
