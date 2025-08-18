@@ -317,28 +317,6 @@ class StatePublisher(Node):
         
 
 
-    def send(self, front, speed): 
-        try:
-            if rclpy.ok():
-
-
-                twist = Twist()
-                twist.linear.x = speed
-                twist.angular.z = front  # map front_rot directly to angular velocity
-
-                self.cmd_vel_pub.publish(twist)
-                print(f"\rSent cmd_vel -> linear.x: {speed:.2f}, angular.z: {front:.2f}", end='')
-
-                self.loop_rate.sleep()
-            else:
-                return False
-        except KeyboardInterrupt:
-            return False
-
-        return True
-
-
-
 
 class ParameterReader(Node):
     def __init__(self, game: Game, target_node='steering_emulator', param_name='steering_mode'):

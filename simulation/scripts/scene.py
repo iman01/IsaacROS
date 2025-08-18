@@ -10,9 +10,14 @@ def build_world(world, stage):
     create_textured_ground(stage, "simulation/world/dirt.png")
 
 
-    l1 = stage.DefinePrim("/World/lightD1", "DistantLight")
-    l1.GetAttribute("inputs:intensity").Set(1000.0)
-    l1.GetAttribute("inputs:color").Set(Gf.Vec3f(0.75,0.75,0.75))
+    light_prim = stage.DefinePrim("/World/lightDistant1", "DistantLight")
+    light_prim.GetAttribute("inputs:intensity").Set(1000.0)
+    light_prim.GetAttribute("inputs:color").Set(Gf.Vec3f(0.75, 0.75, 0.75))
+
+    light_prim2 = stage.DefinePrim("/World/lightDistant2", "DistantLight")
+    light_prim2.GetAttribute("inputs:intensity").Set(1000.0)
+    light_prim2.GetAttribute("inputs:angle").Set(10)
+    light_prim2.GetAttribute("inputs:color").Set(Gf.Vec3f(0.75, 0.75, 0.75))
 
 def create_textured_ground(stage, image_path: str, size=100.0, tiling=(100.0, 100.0),
                            plane_path="/World/TexturedPlane", mtl_path="/World/Materials/Ground"):
@@ -88,7 +93,7 @@ def create_textured_ground(stage, image_path: str, size=100.0, tiling=(100.0, 10
 
 def load_crops(stage, usdc_path: str, semantics_yaml: str):
     import omni.kit.commands, omni.usd, yaml
-    from pxr import UsdGeom, Gf
+    from pxr import UsdGeom, Gf, Sdf
     omni.kit.commands.execute("CreateReference", path_to="/World/Crops",
                               asset_path=usdc_path, usd_context=omni.usd.get_context())
     xform = UsdGeom.Xform(stage.GetPrimAtPath("/World/Crops"))
@@ -112,6 +117,13 @@ def load_crops(stage, usdc_path: str, semantics_yaml: str):
         for sub in child.GetChildren():
             if sub.IsValid() and child.GetTypeName()=="Xform":
                 add_update_semantics(sub, labels[name])
+                for mesh in sub.GetChildren():
+                    if mesh.GetTypeName()=="Mesh":
+                        subd_scheme = mesh.GetAttribute("subdivisionScheme").Get()
+                        if subd_scheme == None:
+                            mesh.CreateAttribute("subdivisionScheme", Sdf.ValueTypeNames.Token)
+                        mesh.GetAttribute("subdivisionScheme").Set("it defaults to catmullClark if i put something like that")
+
 
 def spawn_robot(stage, urdf_path: str) -> str:
     import omni.kit.commands
