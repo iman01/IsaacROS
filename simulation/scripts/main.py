@@ -24,7 +24,7 @@ def main(cfg_path="simulation/config/default.yaml"):
         # build scene
         from .scene import build_world, load_crops, spawn_robot, spawn_ghost, setup_cameras, setup_collisions
         build_world(world, stage)
-        load_crops(stage, cfg.crops_usdc, cfg.semantics_yaml)
+        load_crops(stage, cfg.crops_usdc, cfg.semantics_yaml, cfg.crop_angle_deviation)
         robot_path = spawn_robot(stage, cfg.robot_urdf)
         ghost_path = spawn_ghost(stage, cfg.ghost_urdf, cfg.ghost_opacity) if cfg.ghost_opacity > 0 else None
         if ghost_path:

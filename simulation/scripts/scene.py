@@ -91,9 +91,10 @@ def create_textured_ground(stage, image_path: str, size=100.0, tiling=(100.0, 10
 
 
 
-def load_crops(stage, usdc_path: str, semantics_yaml: str):
+def load_crops(stage, usdc_path: str, semantics_yaml: str, crop_angle_deviation: float):
     import omni.kit.commands, omni.usd, yaml
     from pxr import UsdGeom, Gf, Sdf
+    import random
     omni.kit.commands.execute("CreateReference", path_to="/World/Crops",
                               asset_path=usdc_path, usd_context=omni.usd.get_context())
     xform = UsdGeom.Xform(stage.GetPrimAtPath("/World/Crops"))
@@ -117,6 +118,11 @@ def load_crops(stage, usdc_path: str, semantics_yaml: str):
         for sub in child.GetChildren():
             if sub.IsValid() and child.GetTypeName()=="Xform":
                 add_update_semantics(sub, labels[name])
+            
+                if (labels[name] != "weed"):
+                    set_random_rotate_xyz(sub, crop_angle_deviation)
+
+
                 for mesh in sub.GetChildren():
                     if mesh.GetTypeName()=="Mesh":
                         subd_scheme = mesh.GetAttribute("subdivisionScheme").Get()
@@ -230,3 +236,32 @@ def setup_cameras(cameras: List[CameraCfg]):
         og.Controller.attribute(gate + ".inputs:step").set(int(60 / c.frequency))
         created[c.name] = cam
     return created
+
+def set_random_rotate_xyz(prim, crop_angle_deviation):
+    import omni.kit.commands, omni.usd, yaml
+    from pxr import UsdGeom, Gf, Sdf
+    import random
+    xformable = UsdGeom.Xformable(prim)
+    if not xformable:
+        return
+
+    # Find or create rotateXYZ op
+    rot_op = None
+    for op in xformable.GetOrderedXformOps():
+        if op.GetOpType() == UsdGeom.XformOp.TypeRotateXYZ:
+            rot_op = op
+            break
+    if rot_op is None:
+        rot_op = xformable.AddRotateXYZOp()
+
+    # Read old value (defaults to (0,0,0) if unset)
+    old_val = rot_op.Get()
+    if old_val is None:
+        old_val = Gf.Vec3d(0.0, 0.0, 0.0)
+
+    # New randomized X/Y, keep old Z
+    rx = random.uniform(-crop_angle_deviation, crop_angle_deviation)
+    ry = random.uniform(-crop_angle_deviation, crop_angle_deviation)
+    rz = old_val[2]
+
+    rot_op.Set(Gf.Vec3d(rx, ry, rz))  # values are in degrees

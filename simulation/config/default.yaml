@@ -11,6 +11,8 @@ crops_usdc: simulation/world/crops.usdc
 #Cropcraft config used to generate the field
 semantics_yaml: simulation/config/agrorob_cropcraft.yaml
 
+crop_angle_deviation: 30 #rotation deviation for crops on both x and y axis [deg]
+
 cameras:
   - name: camera_front
     prim_path: /agrorob_visualization/base_link/camera_front
@@ -24,3 +26,4 @@ cameras:
     prim_path: /agrorob_visualization/base_link/camera_right
     position: [1.58, -0.52, 1.95]
     orientation_euler_deg: [0, 90, 0]
+

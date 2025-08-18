@@ -20,6 +20,7 @@ class SimCfg:
     crops_usdc: str
     semantics_yaml: str
     cameras: List[CameraCfg]
+    crop_angle_deviation: float
 
 def load_config(path: str) -> SimCfg:
     with open(path) as f:
@@ -33,4 +34,5 @@ def load_config(path: str) -> SimCfg:
         crops_usdc=raw["crops_usdc"],
         semantics_yaml=raw["semantics_yaml"],
         cameras=cams,
+        crop_angle_deviation=float(raw.get("crop_angle_deviation", 0.0))
     )
