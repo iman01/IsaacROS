@@ -210,8 +210,8 @@ One of the goals of this project is to collect realistic synthetic datasets for 
 
 1. **Start the simulator and front‑end** using `run_isaac.sh` and `run_frontend.sh` (or `run.sh` to launch both).  Position the robot in the field using the controller.
 2. **Open Synthetic Data Recorder** (in the Isaac Lab UI, usually under the *Replicator* menu).  Add the desired camera primitives (for example `/World/agrorob_visualization/base_link/camera_left`) to the *Render Products* list.
-3. In the *Parameters* panel select the outputs you need (e.g., `rgb` and `bounding_box_2d_tight`):contentReference and choose an output directory.
-4. Press **Start** when you are ready to record and drive the robot around.  Data will be written to the selected directory:contentReference.
+3. In the *Parameters* panel select the outputs you need (e.g., `rgb` and `bounding_box_2d_tight`) and choose an output directory.
+4. Press **Start** when you are ready to record and drive the robot around.  Data will be written to the selected directory.
 5. After recording, use the scripts in `data_collection/` to convert the dataset into standard formats:
 
    * `create_coco_dataset.py` — scans all label files, builds a master class list, splits images into train/val sets and writes `instances_train.json` and `instances_val.json` along with a YOLO‑compatible `dataset.yaml`.
@@ -239,6 +239,7 @@ One of the goals of this project is to collect realistic synthetic datasets for 
 * **Synthetic data recorder** – capture high‑quality annotated datasets (RGB images plus tight 2D bounding boxes) and convert them into COCO or YOLO. Ideal for training weed‑detection models.
 
 ---
+
 
 
 
