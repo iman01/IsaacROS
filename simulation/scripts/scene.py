@@ -3,7 +3,7 @@ from .config import CameraCfg
 
 def build_world(world, stage):
     from isaacsim.core.api.objects import GroundPlane
-    from pxr import Gf
+    from pxr import Gf, UsdGeom, Sdf
 
     gp = GroundPlane("/World/defaultGroundPlane", size=100.0)
 
@@ -11,15 +11,24 @@ def build_world(world, stage):
 
 
     light_prim = stage.DefinePrim("/World/lightDistant1", "DistantLight")
-    light_prim.GetAttribute("inputs:intensity").Set(1000.0)
+    light_prim.GetAttribute("inputs:intensity").Set(2000.0)
+    light_prim.GetAttribute("inputs:angle").Set(9)
     light_prim.GetAttribute("inputs:color").Set(Gf.Vec3f(0.75, 0.75, 0.75))
+    light_xform = UsdGeom.Xformable(light_prim)
 
-    light_prim2 = stage.DefinePrim("/World/lightDistant2", "DistantLight")
-    light_prim2.GetAttribute("inputs:intensity").Set(1000.0)
-    light_prim2.GetAttribute("inputs:angle").Set(10)
-    light_prim2.GetAttribute("inputs:color").Set(Gf.Vec3f(0.75, 0.75, 0.75))
+    rot_op = None
+    for op in light_xform.GetOrderedXformOps():
+        if op.GetOpType() == UsdGeom.XformOp.TypeRotateXYZ:
+            rot_op = op
+            break
+    if rot_op is None:
+        rot_op = light_xform.AddRotateXYZOp()
+    rot_op.Set(Gf.Vec3d(10.4, 40.0, 10))
 
-def create_textured_ground(stage, image_path: str, size=100.0, tiling=(100.0, 100.0),
+
+
+
+def create_textured_ground(stage, image_path: str, size=100.0, tiling=(200.0, 200.0),
                            plane_path="/World/TexturedPlane", mtl_path="/World/Materials/Ground"):
     from pxr import UsdGeom, UsdShade, Sdf, Gf, Vt
 
@@ -31,7 +40,7 @@ def create_textured_ground(stage, image_path: str, size=100.0, tiling=(100.0, 10
         Gf.Vec3f( size, -size, z),
         Gf.Vec3f( size,  size, z),
         Gf.Vec3f(-size,  size, z),
-    ])
+    ])  
     mesh.CreatePointsAttr(pts)
     mesh.CreateFaceVertexCountsAttr(Vt.IntArray([4]))
     mesh.CreateFaceVertexIndicesAttr(Vt.IntArray([0, 1, 2, 3]))
