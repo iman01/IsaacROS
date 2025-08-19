@@ -11,7 +11,7 @@ NVIDIA’s Isaac Lab simulator with ROS 2 to provide a digital twin of the Agr
 | Directory / file             | Description |
 | ---------------------------- | ----------- |
 | `agrorob/`                   | Contains URDF files (`agrorob_visualization.urdf`) and associated mesh assets that describe the Agrorob robot.  A ghost model (`agrorob_visualization_ghost.urdf`) is provided for visualising commanded trajectories without affecting the main robot. |
-| `cropcraft/`                 | Placeholder for [CropCraft](https://github.com/jaszczurgra/cropcraft)–based scripts to generate crop rows and weeds.  See [Field Configuration](#field-configuration) for details on using the YAML file. |
+| `cropcraft/`                 | Placeholder for [CropCraft](https://github.com/Romea/cropcraft)–based scripts to generate crop rows and weeds.  See [Field Configuration](#field-configuration) for details on using the YAML file. |
 | `data_collection/`           | Python scripts to convert images and labels produced by Isaac Sim’s Synthetic Data Recorder into COCO and YOLO datasets.  These scripts scan all label files, build a class map and split data into train/val sets. |
 | `frontend/`                  | A pygame‑based controller (`main.py`) that receives live camera feeds from the simulator, supports gamepad input and publishes `/cmd_vel` commands.  Includes `steering_emulator_with_modes.py` which emulates the robot’s steering and wheel dynamics in four modes (car, four‑wheel steer, crab and pivot). |
 | `ros_msgs/`                  | Custom ROS 2 message package (`agrorob_msgs`) containing `RobotState.msg`.  Building these messages allows the ghost robot to publish wheel encoders and joint angles. |
@@ -239,6 +239,7 @@ One of the goals of this project is to collect realistic synthetic datasets for 
 * **Synthetic data recorder** – capture high‑quality annotated datasets (RGB images plus tight 2D bounding boxes) and convert them into COCO or YOLO. Ideal for training weed‑detection models.
 
 ---
+
 
 
 
